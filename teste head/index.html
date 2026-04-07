@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stick Mind — Transformative Psychology for Growth</title>
+    <meta name="description" content="Where psychology meets purpose. Stick Mind architects transformation through science-backed frameworks that unlock your deepest potential.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Three.js r128 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+
+    <!-- Post-processing -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader-content">
+            <div class="loader-logo">STICK <span>MIND</span></div>
+            <div class="loader-bar"><div class="loader-progress" id="loader-progress"></div></div>
+            <div class="loader-text" id="loader-text">Initializing experience...</div>
+        </div>
+    </div>
+
+    <!-- 3D Canvas Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Custom Cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-glow"></div>
+
+    <!-- Header -->
+    <header id="site-header">
+        <a href="#home" class="header-logo" id="header-logo">
+            <svg class="logo-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="white" opacity="0.9"/>
+            </svg>
+            stick mind
+        </a>
+        <div class="header-right">
+            <nav id="main-nav">
+                <a href="#home" class="nav-link active" data-section="0">Home</a>
+                <a href="#us" class="nav-link" data-section="1">Us</a>
+                <a href="#about" class="nav-link" data-section="2">About</a>
+                <a href="#services" class="nav-link" data-section="3">Services</a>
+                <a href="#contact" class="nav-link" data-section="4">Contact</a>
+            </nav>
+            <a href="#contact" class="header-cta" id="header-cta">Request Access</a>
+        </div>
+    </header>
+
+    <!-- Transition Overlay (dark → light) -->
+    <div id="transition-overlay"></div>
+
+    <!-- Scroll Sections -->
+    <main id="scroll-container">
+        <!-- HOME -->
+        <section id="home" class="section">
+            <div class="section-content home-content">
+                <p class="section-eyebrow">TRANSFORMATIVE PSYCHOLOGY FOR GROWTH.</p>
+                <h1 class="hero-title">
+                    Introducing <em>Stick Mind</em>.
+                </h1>
+                <a href="#contact" class="cta-button" id="hero-cta">
+                    Request Access <span class="cta-arrow">↗</span>
+                </a>
+            </div>
+            <div class="scroll-indicator" id="scroll-indicator">
+                <span>Scroll &amp; Explore</span>
+                <div class="scroll-line"></div>
+            </div>
+        </section>
+
+        <!-- US (zoom-dive transition target) -->
+        <section id="us" class="section section-light">
+            <div class="section-content us-content">
+                <h2 class="section-title us-title">
+                    The Mind Behind<br>the <em>Method</em>.
+                </h2>
+                <div class="video-container" id="us-video">
+                    <div class="video-placeholder">
+                        <div class="play-button">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                <polygon points="8,5 20,12 8,19" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <p class="video-caption">Watch our story</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT -->
+        <section id="about" class="section">
+            <div class="section-content about-content">
+                <p class="section-eyebrow">REDEFINING PERSONAL EVOLUTION</p>
+                <h2 class="section-title">
+                    Where Psychology<br>Meets <em>Purpose</em>.
+                </h2>
+                <p class="section-text">
+                    Stick Mind is a fusion of motivational psychology and disciplined methodology.
+                    We architect transformation through science-backed frameworks that unlock your
+                    deepest potential — building mental resilience and clarity that lasts.
+                </p>
+                <div class="about-stats">
+                    <div class="stat">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">Client Satisfaction</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">5k+</span>
+                        <span class="stat-label">Lives Transformed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Methodologies</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SERVICES -->
+        <section id="services" class="section">
+            <div class="section-content services-content">
+                <p class="section-eyebrow">WHAT WE DO</p>
+                <h2 class="section-title">
+                    The Architecture<br>of Your <em>Mind</em>.
+                </h2>
+                <div class="services-grid" id="services-grid">
+                    <div class="service-card" id="service-1">
+                        <div class="service-number">01</div>
+                        <h3>Motivational Psychology</h3>
+                        <p>Unlock the science behind your drive. We decode behavioral patterns to ignite lasting motivation.</p>
+                    </div>
+                    <div class="service-card" id="service-2">
+                        <div class="service-number">02</div>
+                        <h3>Discipline Architecture</h3>
+                        <p>Build unbreakable habits through structured frameworks designed for peak performance.</p>
+                    </div>
+                    <div class="service-card" id="service-3">
+                        <div class="service-number">03</div>
+                        <h3>Deep Self-Assessment</h3>
+                        <p>Comprehensive introspection tools that reveal your true strengths and growth vectors.</p>
+                    </div>
+                    <div class="service-card" id="service-4">
+                        <div class="service-number">04</div>
+                        <h3>Personal Ascension</h3>
+                        <p>Elevate beyond your limits with progressive development pathways.</p>
+                    </div>
+                    <div class="service-card" id="service-5">
+                        <div class="service-number">05</div>
+                        <h3>Mindset Coaching</h3>
+                        <p>One-on-one transformation sessions that rewire your approach to challenges.</p>
+                    </div>
+                    <div class="service-card" id="service-6">
+                        <div class="service-number">06</div>
+                        <h3>Growth Analytics</h3>
+                        <p>Data-driven insights tracking your personal development journey in real time.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="section">
+            <div class="section-content contact-content">
+                <p class="section-eyebrow">JOIN THE NEXT GENERATION OF SELF-MASTERY</p>
+                <h2 class="section-title">
+                    Begin Your<br><em>Transformation</em>.
+                </h2>
+                <a href="mailto:contact@stickmind.com" class="cta-button large" id="contact-cta">
+                    Request Access <span class="cta-arrow">↗</span>
+                </a>
+                <div class="contact-info">
+                    <a href="mailto:contact@stickmind.com" class="contact-link" id="contact-email">contact@stickmind.com</a>
+                    <a href="tel:+5511999998888" class="contact-link" id="contact-phone">+55 (11) 9999-8888</a>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link" id="social-ig">Instagram</a>
+                    <a href="#" class="social-link" id="social-wa">WhatsApp</a>
+                    <a href="#" class="social-link" id="social-li">LinkedIn</a>
+                    <a href="#" class="social-link" id="social-yt">YouTube</a>
+                </div>
+                <div class="footer-line">© 2026 Stick Mind. All rights reserved.</div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
