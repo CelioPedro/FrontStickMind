@@ -450,6 +450,19 @@ a {
     text-transform: uppercase;
 }
 
+/* Home hero elements start invisible — revealed by entrance animation */
+#home .section-eyebrow,
+#home .hero-title,
+#home #hero-cta {
+    opacity: 0;
+}
+
+/* Typewriter character spans */
+.type-char {
+    opacity: 0;
+    filter: blur(3px);
+}
+
 .hero-title,
 .section-title {
     font-family: var(--font-heading);

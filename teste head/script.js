@@ -195,7 +195,9 @@ void main(){
       { camX: 0, camY: 40, camZ: 460, headRotOffsetY: 0.1, headRotOffsetX: -0.05, bloom: 1.5 },
       { camX: 0, camY: 30, camZ: 320, headRotOffsetY: 0, headRotOffsetX: -0.05, bloom: 2.2 }
    ];
-   var currentCamState = { x: 0, y: 0, z: 350, headOffY: 0, headOffX: 0 };
+   var currentCamState = { x: 0, y: 0, z: 350, headOffY: 0.4, headOffX: -0.2 };
+
+   var mouseEnabled = false;  // Disabled until entrance animation completes
 
    var particleMaterial;
    var uniforms = {
@@ -217,7 +219,6 @@ void main(){
       createCursorLight();
       loadHeadModel();
       setupEvents();
-      setupCustomCursor();
       setupNavigation();
       animate();
    }
@@ -758,19 +759,165 @@ void main(){
    }
 
    // ============================================================
-   // ENTRANCE ANIMATION
+   // TYPEWRITER PREPARATION — Split text into per-char spans
+   // ============================================================
+   function prepareTypewriter(element) {
+      var chars = [];
+      var html = element.innerHTML.trim();
+      element.innerHTML = '';
+
+      var temp = document.createElement('div');
+      temp.innerHTML = html;
+
+      function processNode(node, parent) {
+         if (node.nodeType === 3) { // Text node
+            var text = node.textContent.replace(/\s+/g, ' ');
+            for (var i = 0; i < text.length; i++) {
+               var span = document.createElement('span');
+               span.className = 'type-char';
+               span.textContent = text[i];
+               parent.appendChild(span);
+               chars.push(span);
+            }
+         } else if (node.nodeType === 1) { // Element node
+            var tag = node.tagName.toLowerCase();
+            if (tag === 'br') {
+               parent.appendChild(document.createElement('br'));
+               return;
+            }
+            var wrapper = document.createElement(tag);
+            for (var a = 0; a < node.attributes.length; a++) {
+               wrapper.setAttribute(node.attributes[a].name, node.attributes[a].value);
+            }
+            parent.appendChild(wrapper);
+            Array.from(node.childNodes).forEach(function (child) {
+               processNode(child, wrapper);
+            });
+         }
+      }
+
+      Array.from(temp.childNodes).forEach(function (node) {
+         processNode(node, element);
+      });
+
+      return chars;
+   }
+
+   // ============================================================
+   // ENTRANCE ANIMATION — Typewriter + Eye-Tracking Choreography
    // ============================================================
    function playEntranceAnimation() {
-      var tl = gsap.timeline({ delay: 0.2 });
+      // ── Prepare: split hero title into individual char spans ──
+      var heroTitle = document.querySelector('.hero-title');
+      var chars = prepareTypewriter(heroTitle);
+
+      var tl = gsap.timeline({ delay: 0.3 });
+
+      // ── Phase 0: Dismiss loading screen ──
       tl.to('#loading-screen', { opacity: 0, duration: 0.8, ease: 'power2.inOut' })
-         .set('#loading-screen', { display: 'none' })
-         .fromTo('.header-logo', { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.6 }, '-=0.3')
-         .fromTo('.nav-link', { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.08 }, '-=0.3')
-         .fromTo('.header-cta', { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.4 }, '-=0.2')
-         .from('.section-eyebrow', { opacity: 0, y: 20, duration: 0.6 }, '-=0.2')
-         .from('.hero-title', { opacity: 0, y: 30, duration: 0.8, ease: 'power3.out' }, '-=0.3')
-         .from('#hero-cta', { opacity: 0, y: 20, duration: 0.5 }, '-=0.3')
-         .from('.scroll-indicator', { opacity: 0, duration: 1.2 }, '-=0.2');
+        .set('#loading-screen', { display: 'none' });
+
+      // ── Phase A: Head rotates from up-right toward text area (lower-left) ──
+      tl.to(currentCamState, {
+         headOffY: -0.15,   // look toward left (where text will appear)
+         headOffX: 0.05,    // look slightly down
+         duration: 1.5,
+         ease: 'power2.inOut'
+      }, '-=0.3');
+
+      // ── Phase A+: Eyebrow fades in ──
+      tl.fromTo('#home .section-eyebrow',
+         { opacity: 0, y: 20 },
+         { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+         '-=0.8'
+      );
+
+      // ── Make hero title container visible (chars still hidden by .type-char) ──
+      tl.set('.hero-title', { opacity: 1 });
+
+      // ── Phase B: Typewriter with real-time eye-tracking ──
+      var counter = { value: 0 };
+      var totalChars = chars.length;
+      var typeDuration = totalChars * 0.14; // ~140ms per char — calm, sophisticated
+      var lastRevealed = -1;
+
+      tl.to(counter, {
+         value: totalChars,
+         duration: typeDuration,
+         ease: 'none',
+         onUpdate: function () {
+            var idx = Math.min(Math.floor(counter.value), totalChars - 1);
+
+            if (idx > lastRevealed) {
+               // Reveal newly typed characters
+               for (var i = lastRevealed + 1; i <= idx; i++) {
+                  gsap.to(chars[i], {
+                     opacity: 1,
+                     filter: 'blur(0px)',
+                     duration: 0.2,
+                     ease: 'power1.out'
+                  });
+               }
+               lastRevealed = idx;
+
+               // Eye-tracking: head follows the current character position
+               var rect = chars[idx].getBoundingClientRect();
+               var charCenterX = rect.left + rect.width / 2;
+               var charCenterY = rect.top + rect.height / 2;
+
+               // Normalize position relative to viewport center
+               var normalizedX = (charCenterX - W / 2) / (W / 2);
+               var normalizedY = (charCenterY - H / 2) / (H / 2);
+
+               gsap.to(currentCamState, {
+                  headOffY: normalizedX * 0.18,    // horizontal gaze
+                  headOffX: normalizedY * 0.06,     // subtle vertical gaze
+                  duration: 0.8,
+                  ease: 'power3.out',
+                  overwrite: 'auto'
+               });
+            }
+         }
+      });
+
+      // ── Phase C: CTA fades in ──
+      tl.fromTo('#hero-cta',
+         { opacity: 0, y: 20 },
+         { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+         '-=0.3'
+      );
+
+      // ── Phase C+: Processing pause — head "thinks" ──
+      tl.to({}, { duration: 0.5 });
+
+      // ── Phase C++: Fixation — head settles to center ──
+      tl.to(currentCamState, {
+         headOffY: 0,
+         headOffX: 0,
+         duration: 0.8,
+         ease: 'power2.out'
+      });
+
+      // ── Phase D: Header elements appear ──
+      tl.fromTo('.header-logo',
+         { opacity: 0, y: -20 },
+         { opacity: 1, y: 0, duration: 0.6 }, '-=0.4'
+      );
+      tl.fromTo('.nav-link',
+         { opacity: 0, y: -15 },
+         { opacity: 1, y: 0, duration: 0.4, stagger: 0.08 }, '-=0.3'
+      );
+      tl.fromTo('.header-cta',
+         { opacity: 0, y: -15 },
+         { opacity: 1, y: 0, duration: 0.4 }, '-=0.2'
+      );
+      tl.from('.scroll-indicator', { opacity: 0, duration: 1.0 }, '-=0.3');
+
+      // ── Phase E: Release control to mouse + activate cursor spark ──
+      tl.call(function () {
+         mouseEnabled = true;
+         setupCustomCursor();
+      });
    }
 
    // ============================================================
@@ -858,14 +1005,14 @@ void main(){
       }
 
       // Camera follow from section state
-      camera.position.x += (currentCamState.x + mouseX * 0.05 - camera.position.x) * 0.03;
-      camera.position.y += (currentCamState.y + -mouseY * 0.05 - camera.position.y) * 0.03;
+      camera.position.x += (currentCamState.x + (mouseEnabled ? mouseX * 0.05 : 0) - camera.position.x) * 0.03;
+      camera.position.y += (currentCamState.y + (mouseEnabled ? -mouseY * 0.05 : 0) - camera.position.y) * 0.03;
       camera.position.z += (currentCamState.z - camera.position.z) * 0.03;
 
-      // Head rotation — mouse follow + section offset
+      // Head rotation — mouse follow (only when enabled) + section offset
       var halfW = W / 2, halfH = H / 2;
-      targetRotY = (mouseX / halfW) * 0.7 + currentCamState.headOffY;
-      targetRotX = (mouseY / halfH) * 0.45 + currentCamState.headOffX;
+      targetRotY = (mouseEnabled ? (mouseX / halfW) * 0.7 : 0) + currentCamState.headOffY;
+      targetRotX = (mouseEnabled ? (mouseY / halfH) * 0.45 : 0) + currentCamState.headOffX;
 
       if (headPoints) {
          headPoints.rotation.y += (targetRotY - headPoints.rotation.y) * 0.03;
