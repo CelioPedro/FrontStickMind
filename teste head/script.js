@@ -656,13 +656,6 @@ void main(){
          if (hasTransitioned && !transitioning && container.scrollTop <= 5) {
             reverseUsTransition();
          }
-
-         // Header scroll effect
-         if (currentSection > 1) {
-            if (container.scrollTop > homeSection.offsetHeight + 50) {
-               header.classList.add('scrolled');
-            }
-         }
       });
    }
 
@@ -679,7 +672,9 @@ void main(){
       if (idx === 0) {
          var overlay = document.getElementById('transition-overlay');
          overlay.style.opacity = '0';
-         document.getElementById('site-header').classList.remove('light-mode');
+         var hdr = document.getElementById('site-header');
+         hdr.classList.remove('light-mode');
+         hdr.classList.remove('scrolled');
          if (headPoints) {
             headPoints.material.uniforms.uSize.value = 2.2;
          }
@@ -700,8 +695,11 @@ void main(){
          return;
       }
 
-      // For Us (idx=1) — scrub handles the transition, just animate content
+      // For Us (idx=1) — light-mode header
       if (idx === 1) {
+         var hdr = document.getElementById('site-header');
+         hdr.classList.add('light-mode');
+         hdr.classList.remove('scrolled');
          var sectionEl = document.querySelectorAll('.section')[idx];
          var content = sectionEl.querySelector('.section-content');
          if (content) {
@@ -713,7 +711,7 @@ void main(){
          return;
       }
 
-      // For About, Services, Contact — standard camera transition
+      // For About, Services, Contact — dark glassmorphism header
       var state = sectionStates[idx];
       gsap.to(currentCamState, {
          x: state.camX,
@@ -729,10 +727,12 @@ void main(){
          gsap.to(bloomPass, { strength: state.bloom, duration: 1.5, ease: 'power2.inOut' });
       }
 
-      // Restore dark mode & particles for dark sections
+      // Set header same as Home (transparent glass) + remove light-mode
       var overlay = document.getElementById('transition-overlay');
       gsap.to(overlay, { opacity: 0, duration: 0.8, ease: 'power2.out' });
-      document.getElementById('site-header').classList.remove('light-mode');
+      var hdr = document.getElementById('site-header');
+      hdr.classList.remove('light-mode');
+      hdr.classList.remove('scrolled');
       if (headPoints) {
          gsap.to(headPoints.material.uniforms.uSize, {
             value: 2.2, duration: 1.0, ease: 'power2.out'
