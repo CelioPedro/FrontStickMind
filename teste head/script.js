@@ -816,11 +816,108 @@ void main(){
          }, cumulativeTime);
       }
 
-      // Service cards
-      if (idx === 3) {
-         gsap.to('.service-card', {
-            opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out', delay: 0.3
-         });
+      // ── Services Section (idx=3): Wheel-driven sequential chat reveal ──
+      if (idx === 3 && !window._chatQueueSetup) {
+         window._chatQueueSetup = true;
+
+         var chatMessages = Array.from(document.querySelectorAll('[data-chat]'));
+         var chatIndex = 0;
+         var chatTyping = false;
+         var container = document.getElementById('scroll-container');
+
+         function revealNextMessage() {
+            if (chatIndex >= chatMessages.length || chatTyping) return;
+            chatTyping = true;
+
+            var msg = chatMessages[chatIndex];
+            chatIndex++;
+
+            // Fade + slide the message in
+            gsap.to(msg, {
+               opacity: 1,
+               y: 0,
+               duration: 0.45,
+               ease: 'power2.out'
+            });
+
+            // Head tracks this message
+            var rect = msg.getBoundingClientRect();
+            var msgCenterX = rect.left + rect.width / 2;
+            var msgCenterY = rect.top + rect.height / 2;
+            var normalizedX = (msgCenterX - W / 2) / (W / 2);
+            var normalizedY = (msgCenterY - H / 2) / (H / 2);
+
+            gsap.to(currentCamState, {
+               headOffY: sectionStates[3].headRotOffsetY + normalizedX * 0.12,
+               headOffX: sectionStates[3].headRotOffsetX + normalizedY * 0.06 + 0.08,
+               duration: 0.6,
+               ease: 'power2.inOut',
+               overwrite: 'auto'
+            });
+
+            // Typewriter on the text
+            var textEl = msg.querySelector('.msg-text');
+            var fullText = textEl ? textEl.getAttribute('data-text') || '' : '';
+
+            if (fullText) {
+               var typeCounter = { value: 0 };
+               var totalChars = fullText.length;
+               textEl.classList.add('typing');
+
+               gsap.to(typeCounter, {
+                  value: totalChars,
+                  duration: totalChars * 0.025,
+                  ease: 'none',
+                  delay: 0.2,
+                  onUpdate: function () {
+                     var c = Math.min(Math.floor(typeCounter.value), totalChars);
+                     textEl.textContent = fullText.substring(0, c);
+                  },
+                  onComplete: function () {
+                     textEl.textContent = fullText;
+                     textEl.classList.remove('typing');
+                     chatTyping = false;
+
+                     // Show badge if present
+                     var badge = msg.querySelector('.msg-badge');
+                     if (badge) {
+                        gsap.to(badge, {
+                           opacity: 1, duration: 0.4, delay: 0.15, ease: 'power2.out'
+                        });
+                     }
+                  }
+               });
+            } else {
+               chatTyping = false;
+            }
+         }
+
+         // Wheel interceptor — blocks scroll until all messages revealed
+         function onChatWheel(e) {
+            // Only intercept when on Services section
+            if (currentSection !== 3) return;
+
+            // All messages revealed — remove interceptor, allow normal scroll
+            if (chatIndex >= chatMessages.length && !chatTyping) {
+               container.removeEventListener('wheel', onChatWheel, true);
+               return;
+            }
+
+            // Block scroll and reveal next message on scroll down
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (e.deltaY > 0 && !chatTyping) {
+               revealNextMessage();
+            }
+         }
+
+         container.addEventListener('wheel', onChatWheel, true);
+
+         // Auto-reveal first message on section entry
+         setTimeout(function () {
+            revealNextMessage();
+         }, 400);
       }
    }
 
