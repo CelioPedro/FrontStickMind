@@ -750,6 +750,72 @@ void main(){
          );
       }
 
+      // ── About Section (idx=2): Cascading Counters + Eye-Tracking ──
+      if (idx === 2 && !window._aboutCountersDone) {
+         window._aboutCountersDone = true;
+
+         var statEls = document.querySelectorAll('#about-stats .stat');
+         var stats = [
+            { el: document.getElementById('stat-1'), parent: statEls[0], target: 98, suffix: '%', duration: 1.8 },
+            { el: document.getElementById('stat-2'), parent: statEls[1], target: 5, suffix: 'k+', duration: 1.2 },
+            { el: document.getElementById('stat-3'), parent: statEls[2], target: 12, suffix: '', duration: 1.4 }
+         ];
+
+         var counterTl = gsap.timeline({ delay: 1.2 });
+         var cumulativeTime = 0;
+
+         stats.forEach(function (stat) {
+            var counter = { value: 0 };
+
+            // Reveal this stat (fade in + slide up)
+            counterTl.to(stat.parent, {
+               opacity: 1,
+               y: 0,
+               duration: 0.4,
+               ease: 'power2.out'
+            }, cumulativeTime);
+
+            // Move head to look at this stat (biased downward toward stats row)
+            counterTl.call(function () {
+               var rect = stat.el.getBoundingClientRect();
+               var statCenterX = rect.left + rect.width / 2;
+               var statCenterY = rect.top + rect.height / 2;
+               var normalizedX = (statCenterX - W / 2) / (W / 2);
+               var normalizedY = (statCenterY - H / 2) / (H / 2);
+
+               gsap.to(currentCamState, {
+                  headOffY: sectionStates[2].headRotOffsetY + normalizedX * 0.15,
+                  headOffX: sectionStates[2].headRotOffsetX + normalizedY * 0.08 + 0.15,
+                  duration: 0.6,
+                  ease: 'power2.inOut',
+                  overwrite: 'auto'
+               });
+            }, null, cumulativeTime);
+
+            // Count up animation (starts after stat is visible + head arrives)
+            counterTl.to(counter, {
+               value: stat.target,
+               duration: stat.duration,
+               ease: 'power2.out',
+               onUpdate: function () {
+                  var val = Math.round(counter.value);
+                  stat.el.textContent = val + stat.suffix;
+               }
+            }, cumulativeTime + 0.35);
+
+            cumulativeTime += stat.duration + 0.5;
+         });
+
+         // After all counters: head returns to About default position
+         counterTl.to(currentCamState, {
+            headOffY: sectionStates[2].headRotOffsetY,
+            headOffX: sectionStates[2].headRotOffsetX,
+            duration: 0.8,
+            ease: 'power2.out',
+            overwrite: 'auto'
+         }, cumulativeTime);
+      }
+
       // Service cards
       if (idx === 3) {
          gsap.to('.service-card', {
