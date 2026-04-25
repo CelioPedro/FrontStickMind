@@ -662,19 +662,19 @@ a {
     line-height: 1.6;
 }
 
-/* User bubble — prominent white */
+/* User bubble — dark with thin light outline */
 .msg-user .msg-bubble {
-    background: rgba(255, 255, 255, 0.14);
-    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.92);
     border-bottom-right-radius: 6px;
 }
 
-/* Entity bubble — softer white */
+/* Entity bubble — solid white, dark text */
 .msg-entity .msg-bubble {
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    color: rgba(0, 0, 0, 0.85);
     border-bottom-left-radius: 6px;
 }
 
@@ -718,12 +718,16 @@ a {
     visibility: visible;
 }
 
-/* Typing cursor */
+/* Typing cursor — accent for user, dark for entity */
 .msg-typed-overlay.typing::after {
     content: '|';
     color: var(--color-accent);
     animation: cursorBlink 0.6s steps(2) infinite;
     margin-left: 1px;
+}
+
+.msg-entity .msg-typed-overlay.typing::after {
+    color: rgba(0, 0, 0, 0.6);
 }
 
 @keyframes cursorBlink {
@@ -740,12 +744,12 @@ a {
     font-size: 0.68rem;
     font-weight: 500;
     letter-spacing: 0.04em;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(0, 0, 0, 0.4);
     opacity: 0;
 }
 
 .badge-check {
-    color: rgba(155, 93, 229, 0.7);
+    color: rgba(0, 0, 0, 0.6);
     font-size: 0.75rem;
 }
 
