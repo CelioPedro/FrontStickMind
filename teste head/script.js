@@ -832,50 +832,66 @@ void main(){
             var msg = chatMessages[chatIndex];
             chatIndex++;
 
-            // Fade + slide the message in
-            gsap.to(msg, {
-               opacity: 1,
-               y: 0,
-               duration: 0.45,
-               ease: 'power2.out'
-            });
-
-            // Head tracks this message
-            var rect = msg.getBoundingClientRect();
-            var msgCenterX = rect.left + rect.width / 2;
-            var msgCenterY = rect.top + rect.height / 2;
-            var normalizedX = (msgCenterX - W / 2) / (W / 2);
-            var normalizedY = (msgCenterY - H / 2) / (H / 2);
-
-            gsap.to(currentCamState, {
-               headOffY: sectionStates[3].headRotOffsetY + normalizedX * 0.12,
-               headOffX: sectionStates[3].headRotOffsetX + normalizedY * 0.06 + 0.08,
-               duration: 0.6,
-               ease: 'power2.inOut',
-               overwrite: 'auto'
-            });
-
-            // Typewriter on the text
+            // Prepare two-layer text (sizer + typed overlay) BEFORE revealing
             var textEl = msg.querySelector('.msg-text');
             var fullText = textEl ? textEl.getAttribute('data-text') || '' : '';
 
-            if (fullText) {
+            if (fullText && textEl) {
+               textEl.innerHTML = '';
+               var sizer = document.createElement('span');
+               sizer.className = 'msg-sizer';
+               sizer.textContent = fullText;
+               var typed = document.createElement('span');
+               typed.className = 'msg-typed-overlay';
+               textEl.appendChild(sizer);
+               textEl.appendChild(typed);
+            }
+
+            // Smooth pop-in: fade + slide + scale
+            gsap.to(msg, {
+               opacity: 1,
+               y: 0,
+               scale: 1,
+               duration: 0.5,
+               ease: 'power3.out'
+            });
+
+            // Head tracks this message
+            setTimeout(function () {
+               var rect = msg.getBoundingClientRect();
+               var msgCenterX = rect.left + rect.width / 2;
+               var msgCenterY = rect.top + rect.height / 2;
+               var normalizedX = (msgCenterX - W / 2) / (W / 2);
+               var normalizedY = (msgCenterY - H / 2) / (H / 2);
+
+               gsap.to(currentCamState, {
+                  headOffY: sectionStates[3].headRotOffsetY + normalizedX * 0.12,
+                  headOffX: sectionStates[3].headRotOffsetX + normalizedY * 0.06 + 0.08,
+                  duration: 0.6,
+                  ease: 'power2.inOut',
+                  overwrite: 'auto'
+               });
+            }, 50);
+
+            // Typewriter on the overlay layer
+            if (fullText && textEl) {
+               var typed = textEl.querySelector('.msg-typed-overlay');
                var typeCounter = { value: 0 };
                var totalChars = fullText.length;
-               textEl.classList.add('typing');
+               typed.classList.add('typing');
 
                gsap.to(typeCounter, {
                   value: totalChars,
                   duration: totalChars * 0.025,
                   ease: 'none',
-                  delay: 0.2,
+                  delay: 0.35,
                   onUpdate: function () {
                      var c = Math.min(Math.floor(typeCounter.value), totalChars);
-                     textEl.textContent = fullText.substring(0, c);
+                     typed.textContent = fullText.substring(0, c);
                   },
                   onComplete: function () {
-                     textEl.textContent = fullText;
-                     textEl.classList.remove('typing');
+                     typed.textContent = fullText;
+                     typed.classList.remove('typing');
                      chatTyping = false;
 
                      // Show badge if present

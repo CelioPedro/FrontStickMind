@@ -640,7 +640,7 @@ a {
     align-items: flex-end;
     gap: 0.7rem;
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px) scale(0.92);
 }
 
 .msg-user {
@@ -655,26 +655,26 @@ a {
 .msg-bubble {
     width: fit-content;
     max-width: 480px;
-    padding: 0.85rem 1.3rem;
-    border-radius: 20px;
+    padding: 0.9rem 1.4rem;
+    border-radius: 22px;
     font-size: 0.85rem;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.6;
 }
 
-/* User bubble — subtle outline, transparent */
+/* User bubble — prominent white */
 .msg-user .msg-bubble {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: rgba(255, 255, 255, 0.92);
     border-bottom-right-radius: 6px;
 }
 
-/* Entity bubble — slightly brighter glass */
+/* Entity bubble — softer white */
 .msg-entity .msg-bubble {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.8);
     border-bottom-left-radius: 6px;
 }
 
@@ -695,14 +695,31 @@ a {
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* ── Message Text ── */
+/* ── Message Text — Two-layer approach for fixed sizing ── */
 .msg-text {
-    min-height: 1em;
     margin: 0;
+    position: relative;
+}
+
+/* Invisible sizer — holds full text to lock bubble dimensions */
+.msg-sizer {
+    visibility: hidden;
+    display: block;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Visible typed overlay — absolute on top of sizer */
+.msg-typed-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    visibility: visible;
 }
 
 /* Typing cursor */
-.msg-text.typing::after {
+.msg-typed-overlay.typing::after {
     content: '|';
     color: var(--color-accent);
     animation: cursorBlink 0.6s steps(2) infinite;
