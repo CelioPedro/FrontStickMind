@@ -1,7 +1,7 @@
 /* ============================================================
    STICK MIND — 3D Particle Head + Institutional UI Engine
-   Three.js r128 | GSAP ScrollTrigger | Vanilla JS
-   ============================================================ */
+   Three.js r128 | GSAP ScrollTrigger | 
+   ===========================================Vanilla JS================= */
 
 (function () {
    'use strict';
@@ -190,10 +190,10 @@ void main(){
    // Camera states per section (Home, Us, About, Services, Contact)
    var sectionStates = [
       { camX: 0, camY: 0, camZ: 350, headRotOffsetY: 0, headRotOffsetX: 0, bloom: 2.0 },
-      { camX: 0, camY: 0, camZ: 60,  headRotOffsetY: 0, headRotOffsetX: 0, bloom: 3.5 },
+      { camX: 0, camY: 0, camZ: 60, headRotOffsetY: 0, headRotOffsetX: 0, bloom: 3.5 },
       { camX: 50, camY: 10, camZ: 370, headRotOffsetY: -0.25, headRotOffsetX: 0, bloom: 1.8 },
-      { camX: 0, camY: 40, camZ: 460, headRotOffsetY: 0.1, headRotOffsetX: -0.05, bloom: 1.5 },
-      { camX: 0, camY: 30, camZ: 320, headRotOffsetY: 0, headRotOffsetX: -0.05, bloom: 2.2 }
+      { camX: 0, camY: 30, camZ: 320, headRotOffsetY: 0, headRotOffsetX: -0.05, bloom: 2.2 },
+      { camX: 160, camY: -10, camZ: 360, headRotOffsetY: 0.3, headRotOffsetX: 0.05, bloom: 2.5 }
    ];
    var currentCamState = { x: 0, y: 0, z: 350, headOffY: 0.4, headOffX: -0.2 };
 
@@ -740,14 +740,16 @@ void main(){
          });
       }
 
-      // Animate section content
-      var sectionEl = document.querySelectorAll('.section')[idx];
-      var content = sectionEl.querySelector('.section-content');
-      if (content) {
-         gsap.fromTo(content.children,
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power2.out', delay: 0.2 }
-         );
+      // Animate section content (skip Services — its chat has its own reveal system)
+      if (idx !== 3) {
+         var sectionEl = document.querySelectorAll('.section')[idx];
+         var content = sectionEl.querySelector('.section-content');
+         if (content) {
+            gsap.fromTo(content.children,
+               { opacity: 0, y: 30 },
+               { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power2.out', delay: 0.2 }
+            );
+         }
       }
 
       // ── About Section (idx=2): Cascading Counters + Eye-Tracking ──
@@ -847,13 +849,13 @@ void main(){
                textEl.appendChild(typed);
             }
 
-            // Smooth pop-in: fade + slide + scale
+            // Smooth pop-in: slide + scale (no opacity — preserves backdrop-filter)
+            gsap.set(msg, { visibility: 'visible' });
             gsap.to(msg, {
-               opacity: 1,
-               y: 0,
-               scale: 1,
-               duration: 0.5,
-               ease: 'power3.out'
+                y: 0,
+                scale: 1,
+                duration: 0.5,
+                ease: 'power3.out'
             });
 
             // Head tracks this message
@@ -994,7 +996,7 @@ void main(){
 
       // ── Phase 0: Dismiss loading screen ──
       tl.to('#loading-screen', { opacity: 0, duration: 0.8, ease: 'power2.inOut' })
-        .set('#loading-screen', { display: 'none' });
+         .set('#loading-screen', { display: 'none' });
 
       // ── Phase A: Head rotates from up-right toward text area (lower-left) ──
       tl.to(currentCamState, {
