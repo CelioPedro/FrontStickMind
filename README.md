@@ -1,6 +1,6 @@
 # Stick Mind
 
-> [one-line project description]
+> [project description]
 
 ---
 
