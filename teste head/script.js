@@ -938,34 +938,143 @@ void main(){
          }, 400);
       }
 
-      // ── Contact Section (idx=4): Timeline milestones + CTA reveal ──
+      // ── Contact Section (idx=4): Sequential timeline reveal ──
       if (idx === 4 && !window._contactAnimDone) {
          window._contactAnimDone = true;
 
          var ctMilestones = Array.from(document.querySelectorAll('[data-ct]'));
+         var ctLine = document.querySelector('.ct-line');
+         var totalMilestones = ctMilestones.length;
 
-         // Left column header reveal
+         // Initialize the line
+         if (ctLine) gsap.set(ctLine, { scaleY: 0 });
+
+         // Left column header reveal first
          gsap.fromTo('.contact-left-header > *',
             { opacity: 0, y: 25 },
             { opacity: 1, y: 0, duration: 0.6, stagger: 0.12, ease: 'power2.out', delay: 0.2 }
          );
 
-         // Right column CTA reveal
-         gsap.fromTo('.contact-main > *',
-            { opacity: 0, y: 25 },
-            { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: 'power2.out', delay: 0.3 }
-         );
+         // Right column CTA starts hidden, revealed after timeline
+         gsap.set('.contact-main > *', { opacity: 0, y: 25 });
 
-         // Staggered milestone reveal
-         ctMilestones.forEach(function (ms, i) {
+         // Helper: typewriter effect WITHOUT layout shift
+         function typewriteElement(el, callback) {
+            var fullText = el.textContent;
+            el.textContent = '';
+            el.style.position = 'relative';
+            el.style.opacity = '1';
+
+            var sizer = document.createElement('span');
+            sizer.style.visibility = 'hidden';
+            sizer.textContent = fullText;
+            el.appendChild(sizer);
+
+            var overlay = document.createElement('span');
+            overlay.style.position = 'absolute';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            el.appendChild(overlay);
+
+            var counter = { value: 0 };
+            var total = fullText.length;
+
+            gsap.to(counter, {
+               value: total,
+               duration: total * 0.022,
+               ease: 'none',
+               onUpdate: function () {
+                  var c = Math.min(Math.floor(counter.value), total);
+                  overlay.textContent = fullText.substring(0, c);
+               },
+               onComplete: function () {
+                  el.textContent = fullText;
+                  el.style.position = '';
+                  if (callback) callback();
+               }
+            });
+         }
+
+         // Helper: track head toward an element
+         function trackHeadTo(el) {
+            var rect = el.getBoundingClientRect();
+            var cx = rect.left + rect.width / 2;
+            var cy = rect.top + rect.height / 2;
+            var nx = (cx - W / 2) / (W / 2);
+            var ny = (cy - H / 2) / (H / 2);
+
+            gsap.to(currentCamState, {
+               headOffY: sectionStates[4].headRotOffsetY + nx * 0.45,
+               headOffX: sectionStates[4].headRotOffsetX + ny * 0.25,
+               duration: 0.6,
+               ease: 'power2.inOut',
+               overwrite: 'auto'
+            });
+         }
+
+         // Sequential reveal
+         var milestoneIndex = 0;
+
+         function revealNextMilestone() {
+            if (milestoneIndex >= totalMilestones) {
+               // All done — reveal CTA and track head to it
+               setTimeout(function () {
+                  var ctaEl = document.getElementById('contact-cta');
+                  if (ctaEl) trackHeadTo(ctaEl);
+
+                  gsap.to('.contact-main > *', {
+                     opacity: 1,
+                     y: 0,
+                     duration: 0.7,
+                     stagger: 0.15,
+                     ease: 'power2.out'
+                  });
+               }, 300);
+               return;
+            }
+
+            var ms = ctMilestones[milestoneIndex];
+            var desc = ms.querySelector('.ct-desc');
+
+            // Track head toward this milestone
+            trackHeadTo(ms);
+
+            // Phase 1: Reveal icon + year + title
             gsap.to(ms, {
                opacity: 1,
                y: 0,
-               duration: 0.6,
-               ease: 'power3.out',
-               delay: 0.5 + i * 0.25
+               duration: 0.5,
+               ease: 'power3.out'
             });
-         });
+
+            // Phase 2: Typewriter on description
+            gsap.delayedCall(0.4, function () {
+               typewriteElement(desc, function () {
+                  // Phase 3: Grow the continuous line proportionally
+                  if (milestoneIndex < totalMilestones - 1 && ctLine) {
+                     var targetScale = (milestoneIndex + 1) / (totalMilestones - 1);
+                     gsap.to(ctLine, {
+                        scaleY: Math.min(targetScale, 1),
+                        duration: 0.35,
+                        ease: 'power2.out',
+                        onComplete: function () {
+                           milestoneIndex++;
+                           revealNextMilestone();
+                        }
+                     });
+                  } else {
+                     milestoneIndex++;
+                     revealNextMilestone();
+                  }
+               });
+            });
+         }
+
+         // Start sequence after header finishes
+         setTimeout(function () {
+            revealNextMilestone();
+         }, 800);
       }
    }
 
