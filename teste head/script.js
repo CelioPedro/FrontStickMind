@@ -193,7 +193,7 @@ void main(){
       { camX: 0, camY: 0, camZ: 60, headRotOffsetY: 0, headRotOffsetX: 0, bloom: 3.5 },
       { camX: 50, camY: 10, camZ: 370, headRotOffsetY: -0.25, headRotOffsetX: 0, bloom: 1.8 },
       { camX: 0, camY: 30, camZ: 320, headRotOffsetY: 0, headRotOffsetX: -0.05, bloom: 2.2 },
-      { camX: 160, camY: -10, camZ: 360, headRotOffsetY: 0.3, headRotOffsetX: 0.05, bloom: 2.5 }
+      { camX: -200, camY: 30, camZ: 420, headRotOffsetY: 0.35, headRotOffsetX: -0.05, bloom: 1.6 }
    ];
    var currentCamState = { x: 0, y: 0, z: 350, headOffY: 0.4, headOffX: -0.2 };
 
@@ -852,10 +852,10 @@ void main(){
             // Smooth pop-in: slide + scale (no opacity — preserves backdrop-filter)
             gsap.set(msg, { visibility: 'visible' });
             gsap.to(msg, {
-                y: 0,
-                scale: 1,
-                duration: 0.5,
-                ease: 'power3.out'
+               y: 0,
+               scale: 1,
+               duration: 0.5,
+               ease: 'power3.out'
             });
 
             // Head tracks this message
@@ -936,6 +936,66 @@ void main(){
          setTimeout(function () {
             revealNextMessage();
          }, 400);
+      }
+
+      // ── Contact Section (idx=4): Timeline milestones + form reveal ──
+      if (idx === 4 && !window._contactAnimDone) {
+         window._contactAnimDone = true;
+
+         var ctMilestones = Array.from(document.querySelectorAll('[data-ct]'));
+
+         // Left column header reveal
+         gsap.fromTo('.contact-left-header > *',
+            { opacity: 0, y: 25 },
+            { opacity: 1, y: 0, duration: 0.6, stagger: 0.12, ease: 'power2.out', delay: 0.2 }
+         );
+
+         // Right column form reveal
+         gsap.fromTo('.contact-right > *',
+            { opacity: 0, y: 25 },
+            { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out', delay: 0.4 }
+         );
+
+         // Staggered milestone reveal with head tracking
+         ctMilestones.forEach(function (ms, i) {
+            var delay = 0.5 + i * 0.3;
+
+            gsap.to(ms, {
+               opacity: 1,
+               y: 0,
+               duration: 0.6,
+               ease: 'power3.out',
+               delay: delay
+            });
+
+            // Head tracks each milestone
+            gsap.delayedCall(delay, function () {
+               var rect = ms.getBoundingClientRect();
+               var msCenterX = rect.left + rect.width / 2;
+               var msCenterY = rect.top + rect.height / 2;
+               var normalizedX = (msCenterX - W / 2) / (W / 2);
+               var normalizedY = (msCenterY - H / 2) / (H / 2);
+
+               gsap.to(currentCamState, {
+                  headOffY: sectionStates[4].headRotOffsetY + normalizedX * 0.1,
+                  headOffX: sectionStates[4].headRotOffsetX + normalizedY * 0.05,
+                  duration: 0.5,
+                  ease: 'power2.inOut',
+                  overwrite: 'auto'
+               });
+            });
+         });
+
+         // Head returns to default after all milestones
+         gsap.delayedCall(0.5 + ctMilestones.length * 0.3 + 0.5, function () {
+            gsap.to(currentCamState, {
+               headOffY: sectionStates[4].headRotOffsetY,
+               headOffX: sectionStates[4].headRotOffsetX,
+               duration: 0.8,
+               ease: 'power2.out',
+               overwrite: 'auto'
+            });
+         });
       }
    }
 
