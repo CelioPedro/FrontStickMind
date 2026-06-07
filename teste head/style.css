@@ -847,6 +847,7 @@ a {
 }
 
 .ct-milestone {
+    position: relative;
     display: flex;
     align-items: flex-start;
     gap: 1.1rem;
@@ -915,17 +916,16 @@ a {
     opacity: 0;
 }
 
-/* ── Continuous Timeline Line ── */
-.ct-line {
+/* ── Connector Stem (per-milestone) ── */
+.ct-stem {
     position: absolute;
     left: 21px;
-    top: 21px;
-    bottom: 21px;
+    top: 42px;
+    bottom: 0;
     width: 1px;
     background: rgba(155, 93, 229, 0.2);
     transform-origin: top center;
     transform: scaleY(0);
-    z-index: 0;
 }
 
 /* ── Right Column: Contact CTA (original style) ── */
