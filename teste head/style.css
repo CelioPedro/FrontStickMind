@@ -846,6 +846,18 @@ a {
     position: relative;
 }
 
+.ct-line {
+    position: absolute;
+    left: 21px;
+    top: 42px;
+    bottom: 42px;
+    width: 1px;
+    background: linear-gradient(180deg, rgba(199, 125, 255, 0.6), rgba(155, 93, 229, 0.12));
+    transform: scaleY(0);
+    transform-origin: top center;
+    z-index: 1;
+}
+
 .ct-milestone {
     position: relative;
     display: flex;
@@ -854,6 +866,7 @@ a {
     padding: 0;
     opacity: 0;
     transform: translateY(15px);
+    z-index: 2;
 }
 
 .ct-node {

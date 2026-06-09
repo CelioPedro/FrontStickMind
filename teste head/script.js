@@ -367,7 +367,7 @@ void main(){
 
       var loader = new THREE.OBJLoader();
       loader.load(
-         'https://s3-us-west-2.amazonaws.com/s.cdpn.io/40480/head.obj',
+         'assets/models/head.obj',
          function (object) {
             textEl.textContent = 'Building particles...';
             progressEl.style.width = '80%';
