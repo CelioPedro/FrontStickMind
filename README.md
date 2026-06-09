@@ -22,6 +22,7 @@
 6. [Adding or Modifying Features](#adding-or-modifying-features)
    - [How to Add a New Section](#how-to-add-a-new-section)
    - [Modifying Particle Aesthetics](#modifying-particle-aesthetics)
+7. [Future Implementation Docs](#future-implementation-docs)
 
 ---
 
@@ -30,6 +31,19 @@
 Stick Mind is an immersive, single-page experience built around a 3D particle head. As the user scrolls, the camera moves around the head, the lighting changes (bloom), and the head rotates to "look" at UI elements (eye-tracking). 
 
 The project avoids standard scrolling on the initial view, replacing it with a custom zoom-dive transition into the "Us" section, after which standard CSS scroll-snapping and GSAP ScrollTriggers take over.
+
+---
+
+## Future Implementation Docs
+
+The current static experience is documented in this README. The professionalization and platform roadmap live in:
+
+- [Architecture Plan](docs/architecture.md)
+- [Animation And 3D System](docs/animation-system.md)
+- [Implementation Roadmap](docs/implementation-roadmap.md)
+- [Static Experience QA Checklist](docs/static-qa-checklist.md)
+
+These documents define the target Angular/TypeScript frontend structure, future Spring Boot backend direction, experience-engine boundaries, and phased migration plan.
 
 ---
 
