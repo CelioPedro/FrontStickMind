@@ -41,6 +41,7 @@ The current static experience is documented in this README. The professionalizat
 - [Architecture Plan](docs/architecture.md)
 - [Animation And 3D System](docs/animation-system.md)
 - [Implementation Roadmap](docs/implementation-roadmap.md)
+- [Legacy Parity Baseline](docs/legacy-parity-baseline.md)
 - [Static Experience QA Checklist](docs/static-qa-checklist.md)
 
 These documents define the target Angular/TypeScript frontend structure, future Spring Boot backend direction, experience-engine boundaries, and phased migration plan.
@@ -48,6 +49,15 @@ These documents define the target Angular/TypeScript frontend structure, future 
 ---
 
 ## Project Structure
+
+Current migration structure:
+
+- `apps/site/`: Angular shell and future frontend platform.
+- `apps/site/src/app/pages/landing/`: full-screen legacy bridge route.
+- `apps/site/src/app/experience/`: experience configuration and engine experiments.
+- `apps/site/public/legacy/`: golden visual baseline rendered by Angular.
+- `teste head/`: original static source/reference copy.
+- `docs/`: architecture, animation, migration, and QA documentation.
 
 ```
 particles/

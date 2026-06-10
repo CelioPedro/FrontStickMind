@@ -1,0 +1,22 @@
+# Stick Mind legacy experience
+
+This directory is the visual parity baseline for the Angular migration.
+
+Do not treat these files as disposable static assets. The Angular landing route renders `index.html` through a full-screen iframe so the original Three.js, GSAP, scroll choreography, typography, and section timing remain intact while the system is modularized.
+
+## Active files
+
+- `index.html`: legacy DOM and CDN dependency order.
+- `config.js`: editable runtime contract for camera states, particle density, uniforms, and asset paths.
+- `style.css`: complete visual system for the legacy page.
+- `script.js`: Three.js particle head, GSAP timelines, scroll state, and section choreography.
+- `assets/models/head.obj`: particle surface source model.
+- `assets/images/mockvideo.png`: Us section video placeholder.
+
+## Maintenance rules
+
+- Keep the Angular iframe shell visually invisible.
+- Preserve `index.html`, `style.css`, and `script.js` behavior until a modular replacement has matching visual QA.
+- Prefer changing camera, particle, asset, and uniform values through `config.js` before editing `script.js`.
+- Prefer small, named changes tied to a specific section or animation.
+- Check the first viewport and the Home-to-Us choreography after any edit touching global styles, scroll, canvas, camera state, shader uniforms, or GSAP timelines.
