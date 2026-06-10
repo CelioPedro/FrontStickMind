@@ -172,6 +172,12 @@ void main(){
    // ============================================================
    // STATE & CONFIG
    // ============================================================
+   var legacyConfig = window.StickMindLegacy || {};
+   var cameraConfig = legacyConfig.camera || {};
+   var particleConfig = legacyConfig.particles || {};
+   var assetConfig = legacyConfig.assets || {};
+   var uniformConfig = legacyConfig.uniforms || {};
+
    var W = window.innerWidth;
    var H = window.innerHeight;
    var scene, camera, renderer, composer, bloomPass;
@@ -188,25 +194,28 @@ void main(){
    var currentSection = 0;
 
    // Camera states per section (Home, Us, About, Services, Contact)
-   var sectionStates = [
+   var sectionStates = cameraConfig.sections || [
       { camX: 0, camY: 0, camZ: 350, headRotOffsetY: 0, headRotOffsetX: 0, bloom: 2.0 },
       { camX: 0, camY: 0, camZ: 60, headRotOffsetY: 0, headRotOffsetX: 0, bloom: 3.5 },
       { camX: 50, camY: 10, camZ: 370, headRotOffsetY: -0.25, headRotOffsetX: 0, bloom: 1.8 },
       { camX: 0, camY: 30, camZ: 320, headRotOffsetY: 0, headRotOffsetX: -0.05, bloom: 2.2 },
       { camX: 150, camY: -5, camZ: 390, headRotOffsetY: -0.2, headRotOffsetX: 0.03, bloom: 1.5 }
    ];
-   var currentCamState = { x: 0, y: 0, z: 350, headOffY: 0.4, headOffX: -0.2 };
+   var currentCamState = Object.assign(
+      { x: 0, y: 0, z: 350, headOffY: 0.4, headOffX: -0.2 },
+      cameraConfig.initialState
+   );
 
    var mouseEnabled = false;  // Disabled until entrance animation completes
 
    var particleMaterial;
    var uniforms = {
       uTime: { value: 0 },
-      uSize: { value: 2.2 },
+      uSize: { value: uniformConfig.size || 2.2 },
       uMouse: { value: new THREE.Vector3(0, 0, 0) },
-      uMouseRadius: { value: 40.0 },
-      uMouseForce: { value: 1.8 },
-      uBreathing: { value: 0.008 }
+      uMouseRadius: { value: uniformConfig.mouseRadius || 40.0 },
+      uMouseForce: { value: uniformConfig.mouseForce || 1.8 },
+      uBreathing: { value: uniformConfig.breathing || 0.008 }
    };
 
    // ============================================================
@@ -367,7 +376,7 @@ void main(){
 
       var loader = new THREE.OBJLoader();
       loader.load(
-         'assets/models/head.obj',
+         assetConfig.headModel || 'assets/models/head.obj',
          function (object) {
             textEl.textContent = 'Building particles...';
             progressEl.style.width = '80%';
@@ -393,13 +402,15 @@ void main(){
 
                // Generate particles — 28 subdivisions for extreme density
                var isMobile = W < 768;
-               var subs = isMobile ? 52 : 18;
+               var subs = isMobile
+                  ? (particleConfig.mobileSubdivisions || 52)
+                  : (particleConfig.desktopSubdivisions || 18);
 
                object.traverse(function (child) {
                   if (child instanceof THREE.Mesh) {
                      var geo = child.geometry;
                      if (!geo.getAttribute('normal')) geo.computeVertexNormals();
-                     var data = interpolateSurface(geo, 9, subs, centroid);
+                     var data = interpolateSurface(geo, particleConfig.modelScale || 9, subs, centroid);
                      allPos = allPos.concat(data.positions);
                      allNorm = allNorm.concat(data.normals);
                      allSpd = allSpd.concat(data.speeds);
