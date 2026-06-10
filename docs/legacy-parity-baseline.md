@@ -67,7 +67,6 @@ This is not the final architecture. It is a parity bridge.
 - `script.js` still mixes rendering, input, navigation, and section choreography, although camera, particle, asset, and uniform values now live in `config.js`.
 - `style.css` combines tokens, layout, component rules, section rules, and responsive overrides.
 - CDN scripts are still loaded directly by the legacy HTML.
-- There is duplicated media from the original copy: `apps/site/public/legacy/mockvideo.png` is not referenced by the legacy HTML; the active file is `assets/images/mockvideo.png`.
 - Angular currently hosts the experience but does not control the DOM, animations, metadata, or future platform routes inside the iframe.
 - The experimental Angular engine modules under `apps/site/src/app/experience/engine/` are not wired to the visible page after the parity pivot.
 

@@ -226,13 +226,13 @@ Phase 1 has started. Completed items:
 - Updated the current static experience to load the local model.
 - Added the missing `.ct-line` element/styles used by the contact timeline animation.
 - Added `docs/static-qa-checklist.md`.
+- Removed the duplicated Angular legacy root-level `mockvideo.png` after confirming the active reference uses `assets/images/mockvideo.png`.
 
 Remaining Phase 1 items:
 
 1. Run full visual QA in a browser with network access to CDN libraries.
-2. Decide whether to remove legacy root-level `mockvideo.png` after confirming no external references depend on it.
-3. Fix documentation/comment encoding issues where practical.
-4. Confirm mobile layout and text wrapping.
+2. Fix documentation/comment encoding issues where practical.
+3. Confirm mobile layout and text wrapping.
 
 Phase 2 has also started. Completed items:
 
