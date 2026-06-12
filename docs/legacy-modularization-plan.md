@@ -1,0 +1,139 @@
+# Legacy modularization plan
+
+This plan defines how to split `apps/site/public/legacy/script.js` without losing visual parity.
+
+The goal is not to rewrite the experience all at once.
+The goal is to create stable boundaries around the existing behavior so each animation can be maintained, tuned, tested, and eventually moved into the Angular platform.
+
+## Current state
+
+- `config.js` owns the first extracted constants: asset paths, particle density, camera states, and shader uniform defaults.
+- `script.js` still owns rendering, lifecycle, input, navigation, scroll interception, and section choreography.
+- Angular currently hosts the original experience through a full-screen iframe.
+
+## Extraction order
+
+### 1 - Runtime config
+
+Already started with `config.js`.
+
+Next candidates:
+
+- Scroll thresholds, especially Home zoom distance.
+- Animation durations and easing names.
+- Section ids and nav labels.
+- Responsive breakpoints used by the runtime.
+
+Acceptance:
+
+- Values can be changed in one place.
+- No behavior changes unless explicitly intended.
+
+### 2 - Shader source
+
+Move vertex and fragment shader strings out of `script.js`.
+
+Candidate files:
+
+- `shaders.js`
+- later: `shaders/particle-head.vertex.glsl`
+- later: `shaders/particle-head.fragment.glsl`
+
+Acceptance:
+
+- Particle appearance remains identical.
+- Shader uniforms still match the material setup.
+
+### 3 - Scene setup
+
+Extract Three.js setup:
+
+- scene
+- camera
+- renderer
+- composer
+- bloom pass
+- shader material creation
+- cursor light
+
+Candidate file:
+
+- `scene.js`
+
+Acceptance:
+
+- Canvas is created once.
+- Resize still updates renderer, composer, and camera.
+- Fallback without composer still works.
+
+### 4 - Particle model pipeline
+
+Extract:
+
+- OBJ loading
+- centroid computation
+- surface interpolation
+- buffer geometry creation
+- loading progress state
+
+Candidate files:
+
+- `model-loader.js`
+- `surface-sampler.js`
+
+Acceptance:
+
+- Particle count stays within expected range.
+- Head position and scale match the baseline.
+- Loading screen still reaches `Ready`.
+
+### 5 - Section choreography
+
+Extract one section at a time:
+
+- Home entrance and zoom-dive transition.
+- Us reverse transition.
+- About counters and head pose automation.
+- Services chat queue and typewriter.
+- Contact timeline.
+
+Candidate folder:
+
+- `sections/`
+
+Acceptance:
+
+- Each section can be tested against the QA checklist.
+- Scroll locking and nav state remain stable.
+
+### 6 - Runtime controller
+
+After the above, reduce `script.js` into a coordinator:
+
+- load dependencies
+- create context
+- start scene
+- register events
+- start render loop
+
+Acceptance:
+
+- The top-level file explains the application flow in under 150 lines.
+
+## Rules
+
+- Extract before rewriting.
+- Preserve global dependency order until package-managed imports are introduced.
+- Do not move a section animation and a shader change in the same commit.
+- After each extraction, validate first viewport and the affected choreography.
+- Keep commits small and named by boundary.
+
+## Future Angular migration
+
+Only after the legacy modules are stable:
+
+1. Move runtime modules from `public/legacy` into Angular source.
+2. Replace CDN dependencies with package imports.
+3. Replace iframe with Angular-hosted DOM.
+4. Attach the Three.js runtime to Angular lifecycle hooks.
+5. Keep `/legacy` available as a reference until the new route has visual parity.
