@@ -273,70 +273,34 @@ void main(){
       var progressEl = document.getElementById('loader-progress');
       var textEl = document.getElementById('loader-text');
 
-      var loader = new THREE.OBJLoader();
-      loader.load(
-         assetConfig.headModel || 'assets/models/head.obj',
-         function (object) {
+      window.StickMindLegacyModelLoader.loadHeadModel({
+         THREE: THREE,
+         modelUrl: assetConfig.headModel || 'assets/models/head.obj',
+         onModelLoaded: function (object) {
             textEl.textContent = 'Building particles...';
             progressEl.style.width = '80%';
 
             setTimeout(function () {
-               var allPos = [], allNorm = [], allSpd = [], allRnd = [];
-
-               // Compute centroid
-               var centroid = new THREE.Vector3();
-               var vCount = 0;
-               object.traverse(function (child) {
-                  if (child instanceof THREE.Mesh) {
-                     var pa = child.geometry.getAttribute('position');
-                     for (var i = 0; i < pa.count; i++) {
-                        centroid.x += pa.getX(i) * 8;
-                        centroid.y += pa.getY(i) * 8;
-                        centroid.z += pa.getZ(i) * 8;
-                        vCount++;
-                     }
-                  }
-               });
-               centroid.divideScalar(vCount);
-
-               // Generate particles — 28 subdivisions for extreme density
+               // Generate particles using the configured density for this viewport.
                var isMobile = W < 768;
                var subs = isMobile
                   ? (particleConfig.mobileSubdivisions || 52)
                   : (particleConfig.desktopSubdivisions || 18);
 
-               object.traverse(function (child) {
-                  if (child instanceof THREE.Mesh) {
-                     var geo = child.geometry;
-                     if (!geo.getAttribute('normal')) geo.computeVertexNormals();
-                     var data = window.StickMindLegacySurfaceSampler.interpolateSurface({
-                        THREE: THREE,
-                        geometry: geo,
-                        scale: particleConfig.modelScale || 9,
-                        subdivisions: subs,
-                        centroid: centroid
-                     });
-                     allPos = allPos.concat(data.positions);
-                     allNorm = allNorm.concat(data.normals);
-                     allSpd = allSpd.concat(data.speeds);
-                     allRnd = allRnd.concat(data.randoms);
-                  }
+               var head = window.StickMindLegacyModelLoader.createHeadPoints({
+                  THREE: THREE,
+                  object: object,
+                  sampler: window.StickMindLegacySurfaceSampler,
+                  particleMaterial: particleMaterial,
+                  centroidScale: 8,
+                  modelScale: particleConfig.modelScale || 9,
+                  subdivisions: subs
                });
 
-               var geom = new THREE.BufferGeometry();
-               geom.setAttribute('position', new THREE.Float32BufferAttribute(allPos, 3));
-               geom.setAttribute('aNormal', new THREE.Float32BufferAttribute(allNorm, 3));
-               geom.setAttribute('aSpeed', new THREE.Float32BufferAttribute(allSpd, 1));
-               geom.setAttribute('aRandom', new THREE.Float32BufferAttribute(allRnd, 1));
-
-               headPoints = new THREE.Points(geom, particleMaterial);
-               geom.computeBoundingBox();
-               var center = new THREE.Vector3();
-               geom.boundingBox.getCenter(center);
-               headPoints.position.set(-center.x, -center.y - 15, -center.z);
+               headPoints = head.headPoints;
                scene.add(headPoints);
 
-               console.log('Particles:', allPos.length / 3);
+               console.log('Particles:', head.particleCount);
                progressEl.style.width = '100%';
                textEl.textContent = 'Ready';
 
@@ -346,18 +310,18 @@ void main(){
                }, 300);
             }, 50);
          },
-         function (xhr) {
+         onProgress: function (xhr) {
             if (xhr.total > 0) {
                var pct = Math.round(xhr.loaded / xhr.total * 70);
                progressEl.style.width = pct + '%';
                textEl.textContent = 'Loading model... ' + pct + '%';
             }
          },
-         function (err) {
+         onError: function (err) {
             console.error('OBJ load error:', err);
             textEl.textContent = 'Error loading model';
          }
-      );
+      });
    }
 
 
