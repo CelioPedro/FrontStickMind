@@ -10,6 +10,7 @@ This preserves visual parity while the codebase is migrated into maintainable An
 - Legacy runtime config: `apps/site/public/legacy/config.js`
 - Legacy shader source: `apps/site/public/legacy/shaders.js`
 - Legacy scene setup: `apps/site/public/legacy/scene.js`
+- Legacy surface sampler: `apps/site/public/legacy/surface-sampler.js`
 - Legacy styles: `apps/site/public/legacy/style.css`
 - Legacy engine: `apps/site/public/legacy/script.js`
 - Legacy model: `apps/site/public/legacy/assets/models/head.obj`
@@ -55,6 +56,8 @@ This is not the final architecture. It is a parity bridge.
 
 `scene.js` owns the Three.js scene, camera, renderer, composer, bloom pass, particle material, and cursor light setup.
 
+`surface-sampler.js` owns the high-density interpolation that turns model triangles into particle buffer arrays.
+
 `style.css` is organized mostly by visual sections:
 
 - Root tokens and reset.
@@ -71,7 +74,7 @@ This is not the final architecture. It is a parity bridge.
 
 ## Known maintainability debt
 
-- `script.js` still mixes model loading, input, navigation, and section choreography, although camera, particle, asset, uniform values, preferred shader source, and scene setup now live outside the main engine file.
+- `script.js` still mixes OBJ loading, geometry assembly, input, navigation, and section choreography, although camera, particle, asset, uniform values, preferred shader source, scene setup, and surface sampling now live outside the main engine file.
 - `style.css` combines tokens, layout, component rules, section rules, and responsive overrides.
 - CDN scripts are still loaded directly by the legacy HTML.
 - Angular currently hosts the experience but does not control the DOM, animations, metadata, or future platform routes inside the iframe.

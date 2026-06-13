@@ -10,6 +10,7 @@ Do not treat these files as disposable static assets. The Angular landing route 
 - `config.js`: editable runtime contract for camera states, particle density, uniforms, and asset paths.
 - `shaders.js`: particle vertex and fragment shader source used by the legacy engine.
 - `scene.js`: Three.js scene, camera, renderer, composer, material, and cursor light setup.
+- `surface-sampler.js`: high-density surface sampling used to generate particle buffers from the head model.
 - `style.css`: complete visual system for the legacy page.
 - `script.js`: Three.js particle head, GSAP timelines, scroll state, and section choreography.
 - `assets/models/head.obj`: particle surface source model.
