@@ -9,7 +9,8 @@ The goal is to create stable boundaries around the existing behavior so each ani
 
 - `config.js` owns the first extracted constants: asset paths, particle density, camera states, and shader uniform defaults.
 - `shaders.js` owns the preferred particle vertex and fragment shader source.
-- `script.js` still owns rendering, lifecycle, input, navigation, scroll interception, and section choreography.
+- `scene.js` owns Three.js scene setup, renderer, composer, particle material creation, and cursor light creation.
+- `script.js` still owns lifecycle, model loading, input, navigation, scroll interception, and section choreography.
 - Angular currently hosts the original experience through a full-screen iframe.
 
 ## Extraction order
@@ -48,7 +49,10 @@ Acceptance:
 
 ### 3 - Scene setup
 
-Extract Three.js setup:
+Started with `scene.js`.
+The main engine now calls the scene module and keeps ownership of runtime variables used by later animation code.
+
+Extracted:
 
 - scene
 - camera
@@ -60,7 +64,7 @@ Extract Three.js setup:
 
 Candidate file:
 
-- `scene.js`
+- `scene.js` - active
 
 Acceptance:
 
