@@ -1,5 +1,7 @@
 # Stick Mind - Documentation & Developer Guide
 
+> **Nota sobre o Idioma:** Este projeto é desenvolvido 100% em inglês com o propósito de praticar o idioma. Para desafiar não apenas a escrita e a leitura, o vídeo de apresentação também será gravado em inglês, expandindo o treino para a pronúncia e a fluência verbal.
+
 > Transformative Psychology for Growth. A highly interactive, 3D particle-driven landing page combining Three.js, custom shaders, and GSAP scroll animations.
 
 ---
