@@ -11,7 +11,8 @@ The goal is to create stable boundaries around the existing behavior so each ani
 - `shaders.js` owns the preferred particle vertex and fragment shader source.
 - `scene.js` owns Three.js scene setup, renderer, composer, particle material creation, and cursor light creation.
 - `surface-sampler.js` owns the high-density interpolation used to turn model triangles into particle buffers.
-- `script.js` still owns lifecycle, OBJ loading, geometry assembly, input, navigation, scroll interception, and section choreography.
+- `model-loader.js` owns OBJ loading, centroid calculation, particle geometry assembly, and head point positioning.
+- `script.js` still owns lifecycle, loading UI, input, navigation, scroll interception, and section choreography.
 - Angular currently hosts the original experience through a full-screen iframe.
 
 ## Extraction order
@@ -75,19 +76,19 @@ Acceptance:
 
 ### 4 - Particle model pipeline
 
-Started with `surface-sampler.js`.
+Started with `surface-sampler.js` and `model-loader.js`.
 
 Extract:
 
-- OBJ loading
-- centroid computation
+- OBJ loading - active in `model-loader.js`
+- centroid computation - active in `model-loader.js`
 - surface interpolation - active in `surface-sampler.js`
-- buffer geometry creation
+- buffer geometry creation - active in `model-loader.js`
 - loading progress state
 
 Candidate files:
 
-- `model-loader.js`
+- `model-loader.js` - active
 - `surface-sampler.js` - active
 
 Acceptance:
