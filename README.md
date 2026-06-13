@@ -173,4 +173,4 @@ A `currentCamState` object holds the *current* tweened values. In the `animate()
 
 ---
 
-*Documentation compiled by Antigravity*
+*Documentation compiled by pccontra*
