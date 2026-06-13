@@ -238,47 +238,32 @@ void main(){
    // SCENE SETUP
    // ============================================================
    function createScene() {
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(35, W / H, 1, 2000);
-      camera.position.set(0, 0, 350);
-
-      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      renderer.setSize(W, H);
-      renderer.setClearColor(0x000000, 0);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-      // Post-processing
-      try {
-         composer = new THREE.EffectComposer(renderer);
-         composer.addPass(new THREE.RenderPass(scene, camera));
-         bloomPass = new THREE.UnrealBloomPass(
-            new THREE.Vector2(W, H), 2.0, 0.6, 0.15
-         );
-         composer.addPass(bloomPass);
-      } catch (e) {
-         console.warn('Bloom not available:', e);
-         composer = null;
-      }
-
-      particleMaterial = new THREE.ShaderMaterial({
+      var runtime = window.StickMindLegacyScene.createScene({
+         THREE: THREE,
+         width: W,
+         height: H,
+         container: document.getElementById('canvas-container'),
          uniforms: uniforms,
          vertexShader: vertexShader,
-         fragmentShader: fragmentShader,
-         transparent: true,
-         depthWrite: false,
-         blending: THREE.AdditiveBlending
+         fragmentShader: fragmentShader
       });
+
+      scene = runtime.scene;
+      camera = runtime.camera;
+      renderer = runtime.renderer;
+      composer = runtime.composer;
+      bloomPass = runtime.bloomPass;
+      particleMaterial = runtime.particleMaterial;
    }
 
    // ============================================================
    // CURSOR LIGHT ("The Spark")
    // ============================================================
    function createCursorLight() {
-      cursorLight = new THREE.PointLight(0xd4b8ff, 1.8, 100);
-      cursorLight.position.set(0, 0, 50);
-      scene.add(cursorLight);
+      cursorLight = window.StickMindLegacyScene.createCursorLight({
+         THREE: THREE,
+         scene: scene
+      });
    }
 
    // ============================================================
