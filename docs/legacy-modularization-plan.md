@@ -8,6 +8,7 @@ The goal is to create stable boundaries around the existing behavior so each ani
 ## Current state
 
 - `config.js` owns the first extracted constants: asset paths, particle density, camera states, and shader uniform defaults.
+- `shaders.js` owns the preferred particle vertex and fragment shader source.
 - `script.js` still owns rendering, lifecycle, input, navigation, scroll interception, and section choreography.
 - Angular currently hosts the original experience through a full-screen iframe.
 
@@ -31,11 +32,12 @@ Acceptance:
 
 ### 2 - Shader source
 
-Move vertex and fragment shader strings out of `script.js`.
+Started with `shaders.js`.
+The main engine now prefers `window.StickMindLegacyShaders` and keeps inline shader strings as a temporary fallback.
 
 Candidate files:
 
-- `shaders.js`
+- `shaders.js` - active
 - later: `shaders/particle-head.vertex.glsl`
 - later: `shaders/particle-head.fragment.glsl`
 
