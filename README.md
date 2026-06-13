@@ -8,6 +8,7 @@ Do not treat these files as disposable static assets. The Angular landing route 
 
 - `index.html`: legacy DOM and CDN dependency order.
 - `config.js`: editable runtime contract for camera states, particle density, uniforms, and asset paths.
+- `shaders.js`: particle vertex and fragment shader source used by the legacy engine.
 - `style.css`: complete visual system for the legacy page.
 - `script.js`: Three.js particle head, GSAP timelines, scroll state, and section choreography.
 - `assets/models/head.obj`: particle surface source model.
@@ -18,5 +19,6 @@ Do not treat these files as disposable static assets. The Angular landing route 
 - Keep the Angular iframe shell visually invisible.
 - Preserve `index.html`, `style.css`, and `script.js` behavior until a modular replacement has matching visual QA.
 - Prefer changing camera, particle, asset, and uniform values through `config.js` before editing `script.js`.
+- Prefer editing particle shader source in `shaders.js` before touching shader fallback strings in `script.js`.
 - Prefer small, named changes tied to a specific section or animation.
 - Check the first viewport and the Home-to-Us choreography after any edit touching global styles, scroll, canvas, camera state, shader uniforms, or GSAP timelines.

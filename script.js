@@ -6,10 +6,12 @@
 (function () {
    'use strict';
 
+   var legacyShaders = window.StickMindLegacyShaders || {};
+
    // ============================================================
    // VERTEX SHADER — Deep Purple Gradient + Backface Culling
    // ============================================================
-   const vertexShader = `
+   const vertexShader = legacyShaders.vertexShader || `
 precision highp float;
 
 attribute float aSpeed;
@@ -132,7 +134,7 @@ void main(){
    // ============================================================
    // FRAGMENT SHADER — Deep Purple → Lavender Neon Gradient
    // ============================================================
-   const fragmentShader = `
+   const fragmentShader = legacyShaders.fragmentShader || `
 precision highp float;
 
 uniform float uTime;
