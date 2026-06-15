@@ -1124,38 +1124,11 @@ void main(){
    // NAVIGATION
    // ============================================================
    function setupNavigation() {
-      var container = document.getElementById('scroll-container');
-
-      document.querySelectorAll('.nav-link, .header-logo').forEach(function (link) {
-         link.addEventListener('click', function (e) {
-            e.preventDefault();
-            var href = this.getAttribute('href');
-            var target = document.querySelector(href);
-            if (target) {
-               gsap.to(container, {
-                  scrollTo: { y: target, offsetY: 0 },
-                  duration: 1.2,
-                  ease: 'power3.inOut'
-               });
-            }
-         });
-      });
-
-      document.querySelectorAll('.cta-button, .header-cta').forEach(function (btn) {
-         btn.addEventListener('click', function (e) {
-            var href = this.getAttribute('href');
-            if (href && href.startsWith('#')) {
-               e.preventDefault();
-               var target = document.querySelector(href);
-               if (target) {
-                  gsap.to(container, {
-                     scrollTo: { y: target, offsetY: 0 },
-                     duration: 1.2,
-                     ease: 'power3.inOut'
-                  });
-               }
-            }
-         });
+      window.StickMindLegacyNavigation.setup({
+         gsap: gsap,
+         container: document.getElementById('scroll-container'),
+         duration: 1.2,
+         ease: 'power3.inOut'
       });
    }
 
