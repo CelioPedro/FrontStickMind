@@ -15,8 +15,9 @@ Do not treat these files as disposable static assets. The Angular landing route 
 - `navigation.js`: header/nav/CTA click handling and smooth section scrolling.
 - `section-state.js`: shared helpers for section index parsing and active nav state.
 - `home-transition.js`: Home wheel zoom, Home-to-Us transition, and Us-to-Home reverse transition.
+- `sections/about-section.js`: About counters and head eye-tracking choreography.
 - `style.css`: complete visual system for the legacy page.
-- `script.js`: Three.js particle head, GSAP timelines, scroll state, and section choreography.
+- `script.js`: lifecycle, loading UI, render loop, and remaining section choreography.
 - `assets/models/head.obj`: particle surface source model.
 - `assets/images/mockvideo.png`: Us section video placeholder.
 
