@@ -12,7 +12,8 @@ The goal is to create stable boundaries around the existing behavior so each ani
 - `scene.js` owns Three.js scene setup, renderer, composer, particle material creation, and cursor light creation.
 - `surface-sampler.js` owns the high-density interpolation used to turn model triangles into particle buffers.
 - `model-loader.js` owns OBJ loading, centroid calculation, particle geometry assembly, and head point positioning.
-- `script.js` still owns lifecycle, loading UI, input, navigation, scroll interception, and section choreography.
+- `navigation.js` owns header/nav/CTA click handling and smooth section scrolling.
+- `script.js` still owns lifecycle, loading UI, input, scroll interception, section activation, and section choreography.
 - Angular currently hosts the original experience through a full-screen iframe.
 
 ## Extraction order
@@ -99,8 +100,11 @@ Acceptance:
 
 ### 5 - Section choreography
 
+Navigation extraction has started with `navigation.js`.
+
 Extract one section at a time:
 
+- Navigation click routing and smooth scroll - active in `navigation.js`.
 - Home entrance and zoom-dive transition.
 - Us reverse transition.
 - About counters and head pose automation.
