@@ -454,9 +454,7 @@ void main(){
             currentSection = 1;
             // Enable mandatory snap for Us→About→Services→Contact
             container.style.scrollSnapType = 'y mandatory';
-            document.querySelectorAll('.nav-link').forEach(function (link) {
-               link.classList.toggle('active', parseInt(link.dataset.section) === 1);
-            });
+            window.StickMindLegacySectionState.setActiveNav(1);
          }, null, 2.2);
       }
 
@@ -506,9 +504,7 @@ void main(){
             currentSection = 0;
             // Disable mandatory snap so Home zoom works freely
             container.style.scrollSnapType = 'y proximity';
-            document.querySelectorAll('.nav-link').forEach(function (link) {
-               link.classList.toggle('active', parseInt(link.dataset.section) === 0);
-            });
+            window.StickMindLegacySectionState.setActiveNav(0);
          }, null, 1.3);
       }
 
@@ -545,9 +541,7 @@ void main(){
       currentSection = idx;
 
       // Update nav
-      document.querySelectorAll('.nav-link').forEach(function (link) {
-         link.classList.toggle('active', parseInt(link.dataset.section) === idx);
-      });
+      window.StickMindLegacySectionState.setActiveNav(idx);
 
       // For Home (idx=0) — fully reset camera to initial position
       if (idx === 0) {

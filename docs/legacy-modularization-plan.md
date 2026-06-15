@@ -13,7 +13,8 @@ The goal is to create stable boundaries around the existing behavior so each ani
 - `surface-sampler.js` owns the high-density interpolation used to turn model triangles into particle buffers.
 - `model-loader.js` owns OBJ loading, centroid calculation, particle geometry assembly, and head point positioning.
 - `navigation.js` owns header/nav/CTA click handling and smooth section scrolling.
-- `script.js` still owns lifecycle, loading UI, input, scroll interception, section activation, and section choreography.
+- `section-state.js` owns shared section index parsing and active nav state helpers.
+- `script.js` still owns lifecycle, loading UI, input, scroll interception, section activation choreography, and section-specific animation.
 - Angular currently hosts the original experience through a full-screen iframe.
 
 ## Extraction order
@@ -100,11 +101,12 @@ Acceptance:
 
 ### 5 - Section choreography
 
-Navigation extraction has started with `navigation.js`.
+Navigation and section-state extraction has started with `navigation.js` and `section-state.js`.
 
 Extract one section at a time:
 
 - Navigation click routing and smooth scroll - active in `navigation.js`.
+- Active nav state helpers - active in `section-state.js`.
 - Home entrance and zoom-dive transition.
 - Us reverse transition.
 - About counters and head pose automation.
