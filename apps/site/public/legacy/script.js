@@ -352,6 +352,21 @@ void main(){
       var overlay = document.getElementById('transition-overlay');
       var header = document.getElementById('site-header');
 
+      window.StickMindLegacyHomeTransition.setup({
+         gsap: gsap,
+         container: container,
+         homeSection: homeSection,
+         overlay: overlay,
+         header: header,
+         currentCamState: currentCamState,
+         sectionStates: sectionStates,
+         sectionState: window.StickMindLegacySectionState,
+         getHeadPoints: function () { return headPoints; },
+         getBloomPass: function () { return bloomPass; },
+         onSectionChange: function (idx) { currentSection = idx; },
+         zoomTotal: 800
+      });
+
       // ── Zoom state ──
       var zoomProgress = 0;          // 0 → 1
       var zoomActive = true;         // true while on Home, driving zoom
@@ -361,7 +376,7 @@ void main(){
       var accumulatedDelta = 0;
 
       // ── WHEEL INTERCEPTOR: Drives zoom instead of scrolling ──
-      container.addEventListener('wheel', function (e) {
+      function legacyHomeWheelInterceptor(e) {
          // Only intercept on Home section during zoom phase
          if (!zoomActive || transitioning) {
             // If transitioning, block ALL scroll
@@ -387,7 +402,7 @@ void main(){
             hasTransitioned = true;
             triggerUsTransition();
          }
-      }, { passive: false });
+      }
 
       // ── Apply zoom effects based on progress 0→1 ──
       function applyZoomEffects(p) {
@@ -527,13 +542,6 @@ void main(){
          });
       });
 
-      // ── Detect scroll back to top (Us → Home reverse) ──
-      container.addEventListener('scroll', function () {
-         // If on Us section and user scrolls to very top, trigger reverse
-         if (hasTransitioned && !transitioning && container.scrollTop <= 5) {
-            reverseUsTransition();
-         }
-      });
    }
 
    function activateSection(idx) {

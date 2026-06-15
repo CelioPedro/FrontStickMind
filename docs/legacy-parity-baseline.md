@@ -14,6 +14,7 @@ This preserves visual parity while the codebase is migrated into maintainable An
 - Legacy model loader: `apps/site/public/legacy/model-loader.js`
 - Legacy navigation: `apps/site/public/legacy/navigation.js`
 - Legacy section state: `apps/site/public/legacy/section-state.js`
+- Legacy Home transition: `apps/site/public/legacy/home-transition.js`
 - Legacy styles: `apps/site/public/legacy/style.css`
 - Legacy engine: `apps/site/public/legacy/script.js`
 - Legacy model: `apps/site/public/legacy/assets/models/head.obj`
@@ -67,6 +68,8 @@ This is not the final architecture. It is a parity bridge.
 
 `section-state.js` owns section index parsing and active nav state helpers.
 
+`home-transition.js` owns the Home wheel zoom, Home-to-Us transition, and Us-to-Home reverse transition.
+
 `style.css` is organized mostly by visual sections:
 
 - Root tokens and reset.
@@ -83,7 +86,7 @@ This is not the final architecture. It is a parity bridge.
 
 ## Known maintainability debt
 
-- `script.js` still mixes loading UI, input, scroll interception, section activation choreography, and section-specific animation, although camera, particle, asset, uniform values, preferred shader source, scene setup, surface sampling, model geometry assembly, click navigation, and active nav helpers now live outside the main engine file.
+- `script.js` still mixes loading UI, section activation choreography, and section-specific animation, although camera, particle, asset, uniform values, preferred shader source, scene setup, surface sampling, model geometry assembly, click navigation, active nav helpers, and the Home/Us transition now live outside the main engine file.
 - `style.css` combines tokens, layout, component rules, section rules, and responsive overrides.
 - CDN scripts are still loaded directly by the legacy HTML.
 - Angular currently hosts the experience but does not control the DOM, animations, metadata, or future platform routes inside the iframe.
