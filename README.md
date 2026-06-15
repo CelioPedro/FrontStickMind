@@ -14,6 +14,7 @@ Do not treat these files as disposable static assets. The Angular landing route 
 - `model-loader.js`: OBJ loading, centroid calculation, particle geometry assembly, and head point positioning.
 - `navigation.js`: header/nav/CTA click handling and smooth section scrolling.
 - `section-state.js`: shared helpers for section index parsing and active nav state.
+- `home-transition.js`: Home wheel zoom, Home-to-Us transition, and Us-to-Home reverse transition.
 - `style.css`: complete visual system for the legacy page.
 - `script.js`: Three.js particle head, GSAP timelines, scroll state, and section choreography.
 - `assets/models/head.obj`: particle surface source model.
