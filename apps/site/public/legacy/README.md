@@ -20,8 +20,9 @@ Do not treat these files as disposable static assets. The Angular landing route 
 - `sections/services-section.js`: Services chat queue, wheel interception, typewriter, and badge reveal.
 - `sections/contact-section.js`: Contact timeline, milestone typewriter, line growth, and CTA reveal.
 - `entrance-animation.js`: loading dismissal, Home hero typewriter, header reveal, and mouse unlock.
+- `render-loop.js`: mouse tracking, resize handling, camera/head follow, cursor light motion, and composer render loop.
 - `style.css`: complete visual system for the legacy page.
-- `script.js`: lifecycle, scroll trigger registration, mouse/raycast state, and render loop.
+- `script.js`: lifecycle, scene/model bootstrap, and scroll trigger registration.
 - `assets/models/head.obj`: particle surface source model.
 - `assets/images/mockvideo.png`: Us section video placeholder.
 
