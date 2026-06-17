@@ -15,6 +15,7 @@ This preserves visual parity while the codebase is migrated into maintainable An
 - Legacy navigation: `apps/site/public/legacy/navigation.js`
 - Legacy section state: `apps/site/public/legacy/section-state.js`
 - Legacy Home transition: `apps/site/public/legacy/home-transition.js`
+- Legacy section activation: `apps/site/public/legacy/section-activation.js`
 - Legacy About section choreography: `apps/site/public/legacy/sections/about-section.js`
 - Legacy Services section choreography: `apps/site/public/legacy/sections/services-section.js`
 - Legacy Contact section choreography: `apps/site/public/legacy/sections/contact-section.js`
@@ -73,6 +74,8 @@ This is not the final architecture. It is a parity bridge.
 
 `home-transition.js` owns the Home wheel zoom, Home-to-Us transition, and Us-to-Home reverse transition.
 
+`section-activation.js` owns section entry orchestration, camera/bloom/header state, and section choreography routing.
+
 `sections/about-section.js` owns the About counters and head eye-tracking choreography.
 
 `sections/services-section.js` owns the Services chat queue, wheel interception, typewriter, and badge reveal.
@@ -95,7 +98,7 @@ This is not the final architecture. It is a parity bridge.
 
 ## Known maintainability debt
 
-- `script.js` still mixes loading UI and section activation choreography, although camera, particle, asset, uniform values, preferred shader source, scene setup, surface sampling, model geometry assembly, click navigation, active nav helpers, the Home/Us transition, About choreography, Services choreography, and Contact choreography now live outside the main engine file.
+- `script.js` still mixes loading UI, ScrollTrigger registration, entrance animation, mouse/raycast state, and the render loop, although camera, particle, asset, uniform values, preferred shader source, scene setup, surface sampling, model geometry assembly, click navigation, active nav helpers, the Home/Us transition, section activation, About choreography, Services choreography, and Contact choreography now live outside the main engine file.
 - `style.css` combines tokens, layout, component rules, section rules, and responsive overrides.
 - CDN scripts are still loaded directly by the legacy HTML.
 - Angular currently hosts the experience but does not control the DOM, animations, metadata, or future platform routes inside the iframe.

@@ -15,10 +15,11 @@ The goal is to create stable boundaries around the existing behavior so each ani
 - `navigation.js` owns header/nav/CTA click handling and smooth section scrolling.
 - `section-state.js` owns shared section index parsing and active nav state helpers.
 - `home-transition.js` owns the Home wheel zoom, Home-to-Us transition, and Us-to-Home reverse transition.
+- `section-activation.js` owns section entry orchestration, camera/bloom/header state, and section choreography routing.
 - `sections/about-section.js` owns the About counters and head eye-tracking choreography.
 - `sections/services-section.js` owns the Services chat queue, wheel interception, typewriter, and badge reveal.
 - `sections/contact-section.js` owns the Contact timeline, milestone typewriter, line growth, and CTA reveal.
-- `script.js` still owns lifecycle, loading UI, section activation choreography, and remaining section-specific animation.
+- `script.js` still owns lifecycle, loading UI, scroll trigger registration, entrance animation, and the render loop.
 - Angular currently hosts the original experience through a full-screen iframe.
 
 ## Extraction order
@@ -113,6 +114,7 @@ Extract one section at a time:
 - Active nav state helpers - active in `section-state.js`.
 - Home wheel zoom and zoom-dive transition - active in `home-transition.js`.
 - Us reverse transition - active in `home-transition.js`.
+- Section entry orchestration - active in `section-activation.js`.
 - About counters and head pose automation - active in `sections/about-section.js`.
 - Services chat queue and typewriter - active in `sections/services-section.js`.
 - Contact timeline - active in `sections/contact-section.js`.
