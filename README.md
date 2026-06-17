@@ -17,6 +17,7 @@ Do not treat these files as disposable static assets. The Angular landing route 
 - `home-transition.js`: Home wheel zoom, Home-to-Us transition, and Us-to-Home reverse transition.
 - `sections/about-section.js`: About counters and head eye-tracking choreography.
 - `sections/services-section.js`: Services chat queue, wheel interception, typewriter, and badge reveal.
+- `sections/contact-section.js`: Contact timeline, milestone typewriter, line growth, and CTA reveal.
 - `style.css`: complete visual system for the legacy page.
 - `script.js`: lifecycle, loading UI, render loop, and remaining section choreography.
 - `assets/models/head.obj`: particle surface source model.
