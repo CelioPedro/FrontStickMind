@@ -16,6 +16,7 @@ Do not treat these files as disposable static assets. The Angular landing route 
 - `section-state.js`: shared helpers for section index parsing and active nav state.
 - `home-transition.js`: Home wheel zoom, Home-to-Us transition, and Us-to-Home reverse transition.
 - `sections/about-section.js`: About counters and head eye-tracking choreography.
+- `sections/services-section.js`: Services chat queue, wheel interception, typewriter, and badge reveal.
 - `style.css`: complete visual system for the legacy page.
 - `script.js`: lifecycle, loading UI, render loop, and remaining section choreography.
 - `assets/models/head.obj`: particle surface source model.
