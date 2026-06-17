@@ -15,6 +15,7 @@ Do not treat these files as disposable static assets. The Angular landing route 
 - `navigation.js`: header/nav/CTA click handling and smooth section scrolling.
 - `section-state.js`: shared helpers for section index parsing and active nav state.
 - `home-transition.js`: Home wheel zoom, Home-to-Us transition, and Us-to-Home reverse transition.
+- `section-activation.js`: section entry orchestration, camera/bloom/header state, and section choreography routing.
 - `sections/about-section.js`: About counters and head eye-tracking choreography.
 - `sections/services-section.js`: Services chat queue, wheel interception, typewriter, and badge reveal.
 - `sections/contact-section.js`: Contact timeline, milestone typewriter, line growth, and CTA reveal.

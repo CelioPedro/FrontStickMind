@@ -351,6 +351,18 @@ void main(){
       var homeSection = document.getElementById('home');
       var overlay = document.getElementById('transition-overlay');
       var header = document.getElementById('site-header');
+      var sectionActivation = window.StickMindLegacySectionActivation.create({
+         gsap: gsap,
+         sectionStates: sectionStates,
+         currentCamState: currentCamState,
+         sectionState: window.StickMindLegacySectionState,
+         getHeadPoints: function () { return headPoints; },
+         getBloomPass: function () { return bloomPass; },
+         getCurrentSection: function () { return currentSection; },
+         setCurrentSection: function (idx) { currentSection = idx; },
+         getViewportWidth: function () { return W; },
+         getViewportHeight: function () { return H; }
+      });
 
       window.StickMindLegacyHomeTransition.setup({
          gsap: gsap,
@@ -376,142 +388,16 @@ void main(){
             scroller: container,
             start: 'top 60%',
             end: 'bottom 40%',
-            onEnter: function () { activateSection(idx); },
+            onEnter: function () { sectionActivation.activate(idx); },
             onEnterBack: function () {
                if (idx === 1) {
                   // Scrolling back up from About into Us → detect if user keeps going up
                }
-               activateSection(idx);
+               sectionActivation.activate(idx);
             }
          });
       });
 
-   }
-
-   function activateSection(idx) {
-      if (currentSection === idx) return;
-      currentSection = idx;
-
-      // Update nav
-      window.StickMindLegacySectionState.setActiveNav(idx);
-
-      // For Home (idx=0) — fully reset camera to initial position
-      if (idx === 0) {
-         var overlay = document.getElementById('transition-overlay');
-         overlay.style.opacity = '0';
-         var hdr = document.getElementById('site-header');
-         hdr.classList.remove('light-mode');
-         hdr.classList.remove('scrolled');
-         if (headPoints) {
-            headPoints.material.uniforms.uSize.value = 2.2;
-         }
-         // Reset ALL camera state to Home defaults
-         var homeState = sectionStates[0];
-         gsap.to(currentCamState, {
-            x: homeState.camX,
-            y: homeState.camY,
-            z: homeState.camZ,
-            headOffY: homeState.headRotOffsetY,
-            headOffX: homeState.headRotOffsetX,
-            duration: 1.0,
-            ease: 'power2.out'
-         });
-         if (bloomPass) {
-            gsap.to(bloomPass, { strength: homeState.bloom, duration: 1.0, ease: 'power2.out' });
-         }
-         return;
-      }
-
-      // For Us (idx=1) — light-mode header
-      if (idx === 1) {
-         var hdr = document.getElementById('site-header');
-         hdr.classList.add('light-mode');
-         hdr.classList.remove('scrolled');
-         var sectionEl = document.querySelectorAll('.section')[idx];
-         var content = sectionEl.querySelector('.section-content');
-         if (content) {
-            gsap.fromTo(content.children,
-               { opacity: 0, y: 30 },
-               { opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: 'power2.out', delay: 0.3 }
-            );
-         }
-         return;
-      }
-
-      // For About, Services, Contact — dark glassmorphism header
-      var state = sectionStates[idx];
-      gsap.to(currentCamState, {
-         x: state.camX,
-         y: state.camY,
-         z: state.camZ,
-         headOffY: state.headRotOffsetY,
-         headOffX: state.headRotOffsetX,
-         duration: 1.5,
-         ease: 'power3.inOut'
-      });
-
-      if (bloomPass) {
-         gsap.to(bloomPass, { strength: state.bloom, duration: 1.5, ease: 'power2.inOut' });
-      }
-
-      // Set header same as Home (transparent glass) + remove light-mode
-      var overlay = document.getElementById('transition-overlay');
-      gsap.to(overlay, { opacity: 0, duration: 0.8, ease: 'power2.out' });
-      var hdr = document.getElementById('site-header');
-      hdr.classList.remove('light-mode');
-      hdr.classList.remove('scrolled');
-      if (headPoints) {
-         gsap.to(headPoints.material.uniforms.uSize, {
-            value: 2.2, duration: 1.0, ease: 'power2.out'
-         });
-      }
-
-      // Animate section content (skip Services — its chat has its own reveal system)
-      if (idx !== 3) {
-         var sectionEl = document.querySelectorAll('.section')[idx];
-         var content = sectionEl.querySelector('.section-content');
-         if (content) {
-            gsap.fromTo(content.children,
-               { opacity: 0, y: 30 },
-               { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power2.out', delay: 0.2 }
-            );
-         }
-      }
-
-      // ── About Section (idx=2): Cascading Counters + Eye-Tracking ──
-      if (idx === 2) {
-         window.StickMindLegacyAboutSection.play({
-            gsap: gsap,
-            currentCamState: currentCamState,
-            sectionStates: sectionStates,
-            viewportWidth: W,
-            viewportHeight: H
-         });
-      }
-
-      // ── Services Section (idx=3): Wheel-driven sequential chat reveal ──
-      if (idx === 3) {
-         window.StickMindLegacyServicesSection.play({
-            gsap: gsap,
-            currentCamState: currentCamState,
-            sectionStates: sectionStates,
-            viewportWidth: W,
-            viewportHeight: H,
-            container: document.getElementById('scroll-container'),
-            getCurrentSection: function () { return currentSection; }
-         });
-      }
-
-      // ── Contact Section (idx=4): Sequential timeline reveal ──
-      if (idx === 4) {
-         window.StickMindLegacyContactSection.play({
-            gsap: gsap,
-            currentCamState: currentCamState,
-            sectionStates: sectionStates,
-            viewportWidth: W,
-            viewportHeight: H
-         });
-      }
    }
 
    // ============================================================
