@@ -44,7 +44,7 @@ Acceptance:
 ### 2 - Shader source
 
 Started with `shaders.js`.
-The main engine now prefers `window.StickMindLegacyShaders` and keeps inline shader strings as a temporary fallback.
+The main engine now requires `window.StickMindLegacyShaders`; inline shader fallback strings have been removed from `script.js`.
 
 Candidate files:
 

@@ -60,8 +60,8 @@ This is not the final architecture. It is a parity bridge.
 - Per-section camera and bloom states.
 - Particle shader uniform defaults.
 
-`shaders.js` owns the preferred particle vertex and fragment shader source.
-`script.js` still keeps inline shader fallback strings while the legacy runtime is being modularized.
+`shaders.js` owns the particle vertex and fragment shader source.
+`script.js` requires `window.StickMindLegacyShaders` to be available before initialization.
 
 `scene.js` owns the Three.js scene, camera, renderer, composer, bloom pass, particle material, and cursor light setup.
 
