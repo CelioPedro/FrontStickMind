@@ -48,6 +48,11 @@ body {
     cursor: none;
 }
 
+html.legacy-autoscroll-active,
+html.legacy-autoscroll-active * {
+    cursor: ns-resize !important;
+}
+
 a {
     color: inherit;
     text-decoration: none;

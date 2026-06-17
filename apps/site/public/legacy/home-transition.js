@@ -8,6 +8,11 @@
       var hasTransitioned = false;
       var accumulatedDelta = 0;
       var zoomTotal = options.zoomTotal || 800;
+      var autoScrollActive = false;
+      var autoScrollStartY = 0;
+      var autoScrollPointerY = 0;
+      var autoScrollFrame = null;
+      var suppressMiddleClick = false;
 
       function getHeadPoints() {
          return options.getHeadPoints ? options.getHeadPoints() : null;
@@ -42,7 +47,104 @@
          if (scrollIndicator) scrollIndicator.style.opacity = contentFade;
       }
 
+      function canDriveHomeZoom() {
+         return zoomActive && !transitioning && !hasTransitioned;
+      }
+
+      function stopAutoScroll() {
+         if (!autoScrollActive) return;
+
+         autoScrollActive = false;
+         if (autoScrollFrame) {
+            cancelAnimationFrame(autoScrollFrame);
+            autoScrollFrame = null;
+         }
+
+         document.documentElement.classList.remove('legacy-autoscroll-active');
+         document.removeEventListener('mousemove', onAutoScrollMove);
+         document.removeEventListener('mousedown', stopAutoScrollOnPointerDown, true);
+         document.removeEventListener('keydown', onAutoScrollKeydown, true);
+      }
+
+      function advanceHomeZoom(delta) {
+         if (!canDriveHomeZoom()) return;
+
+         accumulatedDelta += delta;
+         accumulatedDelta = Math.max(0, accumulatedDelta);
+         zoomProgress = Math.min(accumulatedDelta / zoomTotal, 1.0);
+
+         applyZoomEffects(zoomProgress);
+
+         if (zoomProgress >= 1.0 && !transitioning && !hasTransitioned) {
+            transitioning = true;
+            hasTransitioned = true;
+            stopAutoScroll();
+            triggerUsTransition();
+         }
+      }
+
+      function runAutoScrollFrame() {
+         if (!autoScrollActive) return;
+
+         var distance = autoScrollPointerY - autoScrollStartY;
+         var deadZone = 8;
+
+         if (Math.abs(distance) > deadZone) {
+            var cappedDistance = Math.max(-240, Math.min(240, distance));
+            advanceHomeZoom(cappedDistance * 0.08);
+         }
+
+         autoScrollFrame = requestAnimationFrame(runAutoScrollFrame);
+      }
+
+      function onAutoScrollMove(event) {
+         autoScrollPointerY = event.clientY;
+      }
+
+      function onAutoScrollKeydown(event) {
+         if (event.key === 'Escape') stopAutoScroll();
+      }
+
+      function stopAutoScrollOnPointerDown(event) {
+         if (!autoScrollActive) return;
+
+         event.preventDefault();
+         event.stopPropagation();
+         stopAutoScroll();
+      }
+
+      function startAutoScroll(event) {
+         if (event.button !== 1 || !canDriveHomeZoom()) return;
+
+         event.preventDefault();
+         event.stopPropagation();
+
+         if (autoScrollActive) return;
+
+         suppressMiddleClick = true;
+         autoScrollActive = true;
+         autoScrollStartY = event.clientY;
+         autoScrollPointerY = event.clientY;
+
+         document.documentElement.classList.add('legacy-autoscroll-active');
+         document.addEventListener('mousemove', onAutoScrollMove);
+         document.addEventListener('mousedown', stopAutoScrollOnPointerDown, true);
+         document.addEventListener('keydown', onAutoScrollKeydown, true);
+
+         if (!autoScrollFrame) runAutoScrollFrame();
+      }
+
+      function suppressNativeMiddleClick(event) {
+         if (!suppressMiddleClick) return;
+
+         event.preventDefault();
+         event.stopPropagation();
+         suppressMiddleClick = false;
+      }
+
       function triggerUsTransition() {
+         stopAutoScroll();
+
          var timeline = options.gsap.timeline();
          var headPoints = getHeadPoints();
 
@@ -84,6 +186,8 @@
       }
 
       function reverseUsTransition() {
+         stopAutoScroll();
+
          transitioning = true;
          var timeline = options.gsap.timeline();
 
@@ -137,19 +241,12 @@
          }
 
          event.preventDefault();
-
-         accumulatedDelta += event.deltaY;
-         accumulatedDelta = Math.max(0, accumulatedDelta);
-         zoomProgress = Math.min(accumulatedDelta / zoomTotal, 1.0);
-
-         applyZoomEffects(zoomProgress);
-
-         if (zoomProgress >= 1.0 && !transitioning && !hasTransitioned) {
-            transitioning = true;
-            hasTransitioned = true;
-            triggerUsTransition();
-         }
+         advanceHomeZoom(event.deltaY);
       }, { passive: false });
+
+      document.addEventListener('mousedown', startAutoScroll, true);
+      document.addEventListener('auxclick', suppressNativeMiddleClick, true);
+      document.addEventListener('click', suppressNativeMiddleClick, true);
 
       options.container.addEventListener('scroll', function () {
          if (hasTransitioned && !transitioning && options.container.scrollTop <= 5) {
