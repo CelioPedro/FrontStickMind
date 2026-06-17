@@ -17,6 +17,7 @@ This preserves visual parity while the codebase is migrated into maintainable An
 - Legacy Home transition: `apps/site/public/legacy/home-transition.js`
 - Legacy About section choreography: `apps/site/public/legacy/sections/about-section.js`
 - Legacy Services section choreography: `apps/site/public/legacy/sections/services-section.js`
+- Legacy Contact section choreography: `apps/site/public/legacy/sections/contact-section.js`
 - Legacy styles: `apps/site/public/legacy/style.css`
 - Legacy engine: `apps/site/public/legacy/script.js`
 - Legacy model: `apps/site/public/legacy/assets/models/head.obj`
@@ -76,6 +77,8 @@ This is not the final architecture. It is a parity bridge.
 
 `sections/services-section.js` owns the Services chat queue, wheel interception, typewriter, and badge reveal.
 
+`sections/contact-section.js` owns the Contact timeline, milestone typewriter, line growth, and CTA reveal.
+
 `style.css` is organized mostly by visual sections:
 
 - Root tokens and reset.
@@ -92,7 +95,7 @@ This is not the final architecture. It is a parity bridge.
 
 ## Known maintainability debt
 
-- `script.js` still mixes loading UI, section activation choreography, and Contact timeline animation, although camera, particle, asset, uniform values, preferred shader source, scene setup, surface sampling, model geometry assembly, click navigation, active nav helpers, the Home/Us transition, About choreography, and Services choreography now live outside the main engine file.
+- `script.js` still mixes loading UI and section activation choreography, although camera, particle, asset, uniform values, preferred shader source, scene setup, surface sampling, model geometry assembly, click navigation, active nav helpers, the Home/Us transition, About choreography, Services choreography, and Contact choreography now live outside the main engine file.
 - `style.css` combines tokens, layout, component rules, section rules, and responsive overrides.
 - CDN scripts are still loaded directly by the legacy HTML.
 - Angular currently hosts the experience but does not control the DOM, animations, metadata, or future platform routes inside the iframe.

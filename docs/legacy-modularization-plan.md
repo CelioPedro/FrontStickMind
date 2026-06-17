@@ -17,6 +17,7 @@ The goal is to create stable boundaries around the existing behavior so each ani
 - `home-transition.js` owns the Home wheel zoom, Home-to-Us transition, and Us-to-Home reverse transition.
 - `sections/about-section.js` owns the About counters and head eye-tracking choreography.
 - `sections/services-section.js` owns the Services chat queue, wheel interception, typewriter, and badge reveal.
+- `sections/contact-section.js` owns the Contact timeline, milestone typewriter, line growth, and CTA reveal.
 - `script.js` still owns lifecycle, loading UI, section activation choreography, and remaining section-specific animation.
 - Angular currently hosts the original experience through a full-screen iframe.
 
@@ -114,7 +115,7 @@ Extract one section at a time:
 - Us reverse transition - active in `home-transition.js`.
 - About counters and head pose automation - active in `sections/about-section.js`.
 - Services chat queue and typewriter - active in `sections/services-section.js`.
-- Contact timeline.
+- Contact timeline - active in `sections/contact-section.js`.
 
 Candidate folder:
 
