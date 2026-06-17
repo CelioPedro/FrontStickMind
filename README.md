@@ -30,6 +30,6 @@ Do not treat these files as disposable static assets. The Angular landing route 
 - Keep the Angular iframe shell visually invisible.
 - Preserve `index.html`, `style.css`, and `script.js` behavior until a modular replacement has matching visual QA.
 - Prefer changing camera, particle, asset, and uniform values through `config.js` before editing `script.js`.
-- Prefer editing particle shader source in `shaders.js` before touching shader fallback strings in `script.js`.
+- Edit particle shader source in `shaders.js`; `script.js` consumes that module directly.
 - Prefer small, named changes tied to a specific section or animation.
 - Check the first viewport and the Home-to-Us choreography after any edit touching global styles, scroll, canvas, camera state, shader uniforms, or GSAP timelines.
