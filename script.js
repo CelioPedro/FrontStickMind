@@ -26,15 +26,8 @@
    var H = window.innerHeight;
    var scene, camera, renderer, composer, bloomPass;
    var headPoints = null;
-   var clock = new THREE.Clock();
    var cursorLight;
-
-   var mouse3D = new THREE.Vector3(0, 0, 0);
-   var raycaster = new THREE.Raycaster();
-   var mouseNorm = new THREE.Vector2(0, 0);
-   var mouseScreen = { x: 0, y: 0 };
-   var mouseX = 0, mouseY = 0;
-   var targetRotY = 0, targetRotX = 0;
+   var renderLoop;
    var currentSection = 0;
 
    // Camera states per section (Home, Us, About, Services, Contact)
@@ -49,8 +42,6 @@
       { x: 0, y: 0, z: 350, headOffY: 0.4, headOffX: -0.2 },
       cameraConfig.initialState
    );
-
-   var mouseEnabled = false;  // Disabled until entrance animation completes
 
    var particleMaterial;
    var uniforms = {
@@ -70,10 +61,11 @@
 
       createScene();
       createCursorLight();
+      createRenderLoop();
       loadHeadModel();
-      setupEvents();
+      renderLoop.setupEvents();
       setupNavigation();
-      animate();
+      renderLoop.start();
    }
 
    // ============================================================
@@ -105,6 +97,26 @@
       cursorLight = window.StickMindLegacyScene.createCursorLight({
          THREE: THREE,
          scene: scene
+      });
+   }
+
+   function createRenderLoop() {
+      renderLoop = window.StickMindLegacyRenderLoop.create({
+         THREE: THREE,
+         width: W,
+         height: H,
+         scene: scene,
+         camera: camera,
+         renderer: renderer,
+         composer: composer,
+         currentCamState: currentCamState,
+         getParticleMaterial: function () { return particleMaterial; },
+         getHeadPoints: function () { return headPoints; },
+         getCursorLight: function () { return cursorLight; },
+         onResize: function (width, height) {
+            W = width;
+            H = height;
+         }
       });
    }
 
@@ -252,7 +264,7 @@
          getViewportWidth: function () { return W; },
          getViewportHeight: function () { return H; },
          onComplete: function () {
-            mouseEnabled = true;
+            renderLoop.setMouseEnabled(true);
             setupCustomCursor();
          }
       });
@@ -267,83 +279,6 @@
          duration: 1.2,
          ease: 'power3.inOut'
       });
-   }
-
-   // ============================================================
-   // EVENTS
-   // ============================================================
-   function setupEvents() {
-      document.addEventListener('mousemove', onMouseMove);
-      window.addEventListener('resize', onResize);
-   }
-
-   function onMouseMove(e) {
-      var halfW = W / 2, halfH = H / 2;
-      mouseX = (e.clientX - halfW) / 2;
-      mouseY = (e.clientY - halfH) / 2;
-      mouseScreen.x = e.clientX;
-      mouseScreen.y = e.clientY;
-
-      mouseNorm.x = (e.clientX / W) * 2 - 1;
-      mouseNorm.y = -(e.clientY / H) * 2 + 1;
-
-      raycaster.setFromCamera(mouseNorm, camera);
-      var plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-      raycaster.ray.intersectPlane(plane, mouse3D);
-   }
-
-   function onResize() {
-      W = window.innerWidth;
-      H = window.innerHeight;
-      camera.aspect = W / H;
-      camera.updateProjectionMatrix();
-      renderer.setSize(W, H);
-      if (composer) composer.setSize(W, H);
-   }
-
-   // ============================================================
-   // RENDER LOOP
-   // ============================================================
-   function animate() {
-      requestAnimationFrame(animate);
-      var time = clock.getElapsedTime();
-
-      // Update uniforms
-      if (particleMaterial) {
-         particleMaterial.uniforms.uTime.value = time;
-         particleMaterial.uniforms.uMouse.value.copy(mouse3D);
-      }
-
-      // Camera follow from section state
-      camera.position.x += (currentCamState.x + (mouseEnabled ? mouseX * 0.05 : 0) - camera.position.x) * 0.03;
-      camera.position.y += (currentCamState.y + (mouseEnabled ? -mouseY * 0.05 : 0) - camera.position.y) * 0.03;
-      camera.position.z += (currentCamState.z - camera.position.z) * 0.03;
-
-      // Head rotation — mouse follow (only when enabled) + section offset
-      var halfW = W / 2, halfH = H / 2;
-      targetRotY = (mouseEnabled ? (mouseX / halfW) * 0.7 : 0) + currentCamState.headOffY;
-      targetRotX = (mouseEnabled ? (mouseY / halfH) * 0.45 : 0) + currentCamState.headOffX;
-
-      if (headPoints) {
-         headPoints.rotation.y += (targetRotY - headPoints.rotation.y) * 0.03;
-         headPoints.rotation.x += (targetRotX - headPoints.rotation.x) * 0.03;
-      }
-
-      // Cursor light follows mouse with easing
-      if (cursorLight) {
-         cursorLight.position.x += (mouse3D.x - cursorLight.position.x) * 0.08;
-         cursorLight.position.y += (mouse3D.y - cursorLight.position.y) * 0.08;
-         cursorLight.position.z = 60;
-      }
-
-
-      camera.lookAt(scene.position);
-
-      if (composer) {
-         composer.render();
-      } else {
-         renderer.render(scene, camera);
-      }
    }
 
    // ============================================================
