@@ -19,7 +19,8 @@ The goal is to create stable boundaries around the existing behavior so each ani
 - `sections/about-section.js` owns the About counters and head eye-tracking choreography.
 - `sections/services-section.js` owns the Services chat queue, wheel interception, typewriter, and badge reveal.
 - `sections/contact-section.js` owns the Contact timeline, milestone typewriter, line growth, and CTA reveal.
-- `script.js` still owns lifecycle, loading UI, scroll trigger registration, entrance animation, and the render loop.
+- `entrance-animation.js` owns loading dismissal, Home hero typewriter, header reveal, and mouse unlock.
+- `script.js` still owns lifecycle, scroll trigger registration, mouse/raycast state, and the render loop.
 - Angular currently hosts the original experience through a full-screen iframe.
 
 ## Extraction order
@@ -118,6 +119,7 @@ Extract one section at a time:
 - About counters and head pose automation - active in `sections/about-section.js`.
 - Services chat queue and typewriter - active in `sections/services-section.js`.
 - Contact timeline - active in `sections/contact-section.js`.
+- Entrance animation and Home hero typewriter - active in `entrance-animation.js`.
 
 Candidate folder:
 
