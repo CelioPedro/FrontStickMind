@@ -180,23 +180,6 @@
 
 
    // ============================================================
-   // CUSTOM CURSOR
-   // ============================================================
-   function setupCustomCursor() {
-      if (W < 768) return;
-      var dot = document.getElementById('cursor-dot');
-      var glow = document.getElementById('cursor-glow');
-      dot.style.opacity = '1';
-      glow.style.opacity = '1';
-
-      document.addEventListener('mousemove', function (e) {
-         dot.style.left = e.clientX + 'px';
-         dot.style.top = e.clientY + 'px';
-         gsap.to(glow, { left: e.clientX, top: e.clientY, duration: 0.35, ease: 'power2.out' });
-      });
-   }
-
-   // ============================================================
    // GSAP SCROLL ANIMATIONS
    // ============================================================
    function setupScrollAnimations() {
@@ -265,7 +248,9 @@
          getViewportHeight: function () { return H; },
          onComplete: function () {
             renderLoop.setMouseEnabled(true);
-            setupCustomCursor();
+            if (window.StickMindLegacyCursor) {
+               window.StickMindLegacyCursor.setup({ gsap: gsap });
+            }
          }
       });
    }
