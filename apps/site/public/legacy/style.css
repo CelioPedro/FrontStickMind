@@ -832,6 +832,12 @@ html.cursor-magnetic #cursor-glow {
     margin-bottom: 1.8rem;
 }
 
+.contact-left-header > *,
+.contact-main > * {
+    opacity: 0;
+    transform: translateY(25px);
+}
+
 .contact-eyebrow-accent {
     font-family: var(--font-heading);
     font-size: 0.75rem;
@@ -868,6 +874,8 @@ html.cursor-magnetic #cursor-glow {
 
 /* ── Contact Timeline ── */
 .contact-timeline {
+    --ct-node-size: 42px;
+    --ct-node-radius: calc(var(--ct-node-size) / 2);
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -875,15 +883,7 @@ html.cursor-magnetic #cursor-glow {
 }
 
 .ct-line {
-    position: absolute;
-    left: 21px;
-    top: 42px;
-    bottom: 42px;
-    width: 1px;
-    background: linear-gradient(180deg, rgba(199, 125, 255, 0.6), rgba(155, 93, 229, 0.12));
-    transform: scaleY(0);
-    transform-origin: top center;
-    z-index: 1;
+    display: none;
 }
 
 .ct-milestone {
@@ -895,15 +895,54 @@ html.cursor-magnetic #cursor-glow {
     opacity: 0;
     transform: translateY(15px);
     z-index: 2;
+    filter: blur(6px);
+    isolation: isolate;
+}
+
+.ct-milestone:not(:last-child)::before,
+.ct-milestone:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: var(--ct-node-radius);
+    top: var(--ct-node-size);
+    bottom: 0;
+    width: 1px;
+    transform-origin: top center;
+    z-index: 0;
+}
+
+.ct-milestone:not(:last-child)::before {
+    background: linear-gradient(180deg, rgba(199, 125, 255, 0.28), rgba(155, 93, 229, 0.06));
+    box-shadow: 0 0 18px rgba(155, 93, 229, 0.12);
+}
+
+.ct-milestone:not(:last-child)::after {
+    width: 2px;
+    left: calc(var(--ct-node-radius) - 1px);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(199, 125, 255, 0.72) 46%, rgba(155, 93, 229, 0.18));
+    box-shadow:
+        0 0 12px rgba(199, 125, 255, 0.34),
+        0 0 28px rgba(155, 93, 229, 0.16);
+    transform: scaleY(0);
+    transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ct-milestone.is-complete:not(:last-child)::after {
+    transform: scaleY(1);
+}
+
+.ct-milestone.is-active:not(:last-child)::before {
+    background: linear-gradient(180deg, rgba(199, 125, 255, 0.36), rgba(155, 93, 229, 0.1));
 }
 
 .ct-node {
-    width: 42px;
-    height: 42px;
-    min-width: 42px;
+    width: var(--ct-node-size);
+    height: var(--ct-node-size);
+    min-width: var(--ct-node-size);
     border-radius: 50%;
     border: 1px solid rgba(155, 93, 229, 0.3);
-    background: rgba(10, 5, 25, 0.6);
+    background: rgba(10, 5, 25, 0.96);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -914,9 +953,42 @@ html.cursor-magnetic #cursor-glow {
     z-index: 2;
 }
 
+.ct-node::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(199, 125, 255, 0.22), transparent 65%);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    z-index: -1;
+}
+
 .ct-node svg {
     width: 18px;
     height: 18px;
+}
+
+.ct-milestone.is-active .ct-node,
+.ct-milestone.is-complete .ct-node {
+    color: rgba(255, 255, 255, 0.92);
+    border-color: rgba(199, 125, 255, 0.72);
+    background: rgba(20, 10, 38, 0.96);
+    box-shadow:
+        0 0 18px rgba(199, 125, 255, 0.34),
+        inset 0 0 18px rgba(255, 255, 255, 0.05);
+}
+
+.ct-milestone.is-active .ct-node::before {
+    opacity: 1;
+    transform: scale(1);
+    animation: ctNodePulse 1.35s ease-in-out infinite;
+}
+
+.ct-milestone.is-complete .ct-node::before {
+    opacity: 0.45;
+    transform: scale(0.9);
 }
 
 .ct-milestone:hover .ct-node {
@@ -924,9 +996,24 @@ html.cursor-magnetic #cursor-glow {
     box-shadow: 0 0 15px rgba(155, 93, 229, 0.25);
 }
 
+@keyframes ctNodePulse {
+    0%,
+    100% {
+        opacity: 0.45;
+        transform: scale(0.86);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+}
+
 .ct-info {
     padding-top: 3px;
     padding-bottom: 0.6rem;
+    position: relative;
+    z-index: 2;
 }
 
 .ct-year {
@@ -1142,6 +1229,7 @@ html.cursor-magnetic #cursor-glow {
     }
 
     .contact-timeline {
+        --ct-node-size: 38px;
         gap: 0;
     }
 
