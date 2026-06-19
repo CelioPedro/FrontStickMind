@@ -53,11 +53,14 @@
 
       var heroTitle = document.querySelector('.hero-title');
       var chars = prepareTypewriter(heroTitle);
+      var initialPresenceHold = options.initialPresenceHold || 1.75;
 
       var timeline = gsap.timeline({ delay: 0.3 });
 
       timeline.to('#loading-screen', { opacity: 0, duration: 0.8, ease: 'power2.inOut' })
          .set('#loading-screen', { display: 'none' });
+
+      timeline.to({}, { duration: initialPresenceHold });
 
       timeline.to(currentCamState, {
          headOffY: -0.15,
