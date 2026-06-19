@@ -1,8 +1,27 @@
 (function () {
    'use strict';
 
+   function resetHeadToFront(options) {
+      var contactState = options.sectionStates[4] || { camX: 0, camZ: 1 };
+      var centerRotation = options.frontRotation || {
+         y: Math.atan2(contactState.camX, contactState.camZ),
+         x: 0
+      };
+
+      options.gsap.to(options.currentCamState, {
+         headOffY: centerRotation.y,
+         headOffX: centerRotation.x,
+         duration: 0.95,
+         ease: 'power3.inOut',
+         overwrite: 'auto'
+      });
+   }
+
    function play(options) {
-      if (window._contactAnimDone) return;
+      if (window._contactAnimDone) {
+         resetHeadToFront(options);
+         return;
+      }
       window._contactAnimDone = true;
 
       var gsap = options.gsap;
@@ -90,7 +109,10 @@
                   y: 0,
                   duration: 0.7,
                   stagger: 0.15,
-                  ease: 'power2.out'
+                  ease: 'power2.out',
+                  onComplete: function () {
+                     resetHeadToFront(options);
+                  }
                });
             }, 300);
             return;

@@ -133,29 +133,52 @@ a {
    ============================================================ */
 #cursor-dot {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 8px;
     height: 8px;
-    background: var(--color-accent-light);
+    background: #ffffff;
     border-radius: 50%;
     pointer-events: none;
     z-index: var(--z-cursor);
     transform: translate(-50%, -50%);
     opacity: 0;
-    mix-blend-mode: screen;
-    box-shadow: 0 0 6px var(--color-accent-light);
+    mix-blend-mode: difference;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.65);
+    will-change: left, top, width, height, opacity;
 }
 
 #cursor-glow {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 48px;
     height: 48px;
-    background: radial-gradient(circle, rgba(199, 125, 255, 0.25) 0%, transparent 70%);
+    background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, rgba(199, 125, 255, 0.08) 42%, transparent 72%);
     border-radius: 50%;
     pointer-events: none;
     z-index: calc(var(--z-cursor) - 1);
     transform: translate(-50%, -50%);
     opacity: 0;
-    mix-blend-mode: screen;
+    mix-blend-mode: difference;
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+    box-shadow:
+        0 0 24px rgba(199, 125, 255, 0.2),
+        inset 0 0 18px rgba(255, 255, 255, 0.08);
+    will-change: left, top, width, height, opacity;
+}
+
+html.cursor-interactive #cursor-glow {
+    box-shadow:
+        0 0 34px rgba(199, 125, 255, 0.28),
+        inset 0 0 24px rgba(255, 255, 255, 0.13);
+}
+
+html.cursor-magnetic #cursor-glow {
+    background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(199, 125, 255, 0.12) 46%, transparent 74%);
 }
 
 /* ============================================================
