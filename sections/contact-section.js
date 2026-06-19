@@ -31,10 +31,17 @@
       var viewportHeight = options.viewportHeight;
 
       var ctMilestones = Array.from(document.querySelectorAll('[data-ct]'));
-      var ctLine = document.querySelector('.ct-line');
+      var contactTimeline = document.querySelector('.contact-timeline');
       var totalMilestones = ctMilestones.length;
 
-      if (ctLine) gsap.set(ctLine, { scaleY: 0 });
+      if (contactTimeline) {
+         contactTimeline.classList.remove('is-complete');
+         contactTimeline.classList.add('is-playing');
+      }
+      ctMilestones.forEach(function (milestone) {
+         milestone.classList.remove('is-active');
+         milestone.classList.remove('is-complete');
+      });
 
       gsap.fromTo('.contact-left-header > *',
          { opacity: 0, y: 25 },
@@ -111,6 +118,10 @@
                   stagger: 0.15,
                   ease: 'power2.out',
                   onComplete: function () {
+                     if (contactTimeline) {
+                        contactTimeline.classList.remove('is-playing');
+                        contactTimeline.classList.add('is-complete');
+                     }
                      resetHeadToFront(options);
                   }
                });
@@ -121,31 +132,34 @@
          var milestone = ctMilestones[milestoneIndex];
          var desc = milestone.querySelector('.ct-desc');
 
+         milestone.classList.add('is-active');
          trackHeadTo(milestone);
 
-         gsap.to(milestone, {
+         gsap.fromTo(milestone, {
+            opacity: 0,
+            y: 18,
+            scale: 0.96,
+            filter: 'blur(6px)'
+         }, {
             opacity: 1,
             y: 0,
-            duration: 0.5,
+            scale: 1,
+            filter: 'blur(0px)',
+            duration: 0.65,
             ease: 'power3.out'
          });
 
          gsap.delayedCall(0.4, function () {
             typewriteElement(desc, function () {
-               if (milestoneIndex < totalMilestones - 1 && ctLine) {
-                  var targetScale = (milestoneIndex + 1) / (totalMilestones - 1);
-                  gsap.to(ctLine, {
-                     scaleY: Math.min(targetScale, 1),
-                     duration: 0.35,
-                     ease: 'power2.out',
-                     onComplete: function () {
-                        milestoneIndex++;
-                        revealNextMilestone();
-                     }
-                  });
+               milestone.classList.remove('is-active');
+               milestone.classList.add('is-complete');
+
+               if (milestoneIndex < totalMilestones - 1) {
+                  milestoneIndex++;
+                  gsap.delayedCall(0.32, revealNextMilestone);
                } else {
                   milestoneIndex++;
-                  revealNextMilestone();
+                  gsap.delayedCall(0.12, revealNextMilestone);
                }
             });
          });
