@@ -1,122 +1,248 @@
-# Fundamentação Matemática e Computacional: Sistema 3D StickMind
+# Documentação Técnica Avançada e Engenharia Reversa: FrontStickMind
 
-Este documento detalha o modelo matemático rigoroso, as equações de álgebra linear, os cálculos trigonométricos e as transformações geométricas espaciais que sustentam a interface interativa tridimensional do projeto **StickMind**. Todo o processamento baseia-se na conversão de interações bidimensionais do usuário e variações temporais discretas em manipulações matriciais complexas no espaço projetivo.
-
----
-
-## 1. Topologia da Nuvem de Pontos e Teoria dos Conjuntos Espaciais
-
-O rosto tridimensional do StickMind é modelado não como uma superfície contínua ou malha poligonal sólida (*solid mesh*), mas sim como uma estrutura discreta denominada **Nuvem de Pontos** (*Point Cloud*). 
-
-Matematicamente, essa estrutura é definida como um conjunto finito S de vetores de posição no espaço euclidiano tridimensional R³:
-
-S = { P₁, P₂, P₃, ..., Pₙ }
-
-Onde a cardinalidade do conjunto (densidade de partículas) é calibrada operacionalmente para o balanço ideal entre fidelidade visual e custo computacional:
-n = 15.000 vértices
-
-Cada elemento individual Pᵢ é um vetor coluna composto por suas coordenadas espaciais locais:
-Pᵢ = [xᵢ, yᵢ, zᵢ]ᵀ ∈ R³
+Esta documentação fornece uma análise de engenharia reversa abrangente e aprofundada da arquitetura front-end, do pipeline de renderização WebGL e das implementações de baixo nível utilizadas no repositório **FrontStickMind**. O sistema aproveita o ecossistema Three.js e shaders customizados em GLSL para construir uma interface altamente interativa e de performance otimizada para o usuário.
 
 ---
 
-## 2. Dinâmica de Perturbação Harmônica e Modelagem Temporal
+## 1. Arquitetura do Sistema e Fluxo de Dados End-to-End
 
-Para conferir uma estética orgânica e fluida de "respiração" e flutuação ao modelo, as coordenadas originais de repouso de cada ponto são dinamicamente alteradas em função de uma variável escalar contínua de tempo t. 
+O pipeline de dados do FrontStickMind opera em uma arquitetura de loop fechado, coletando entradas assíncronas de hardware (Eventos DOM do Mouse) e sincronizando-as com o ciclo de atualização vertical da GPU através de buffers de memória otimizados.
 
-A perturbação atua predominantemente sobre o eixo de profundidade (z), sendo governada por uma combinação linear de funções de onda trigonométricas senoidais e cossenoidais defasadas no espaço bidimensional horizontal (x, y).
-
-A equação de perturbação para o componente z do i-ésimo vértice é expressa por:
-
-zᵢ'(t) = zᵢ + Aₓ * sin(ωₓ * t + φₓ * xᵢ) + A_y * cos(ω_y * t + φ_y * yᵢ)
-
-### Constantes Operacionais e Valores Reais de Calibração:
-* **Amplitude de Oscilação Horizontal (Aₓ):** 0.12 unidades virtuais (determina a intensidade máxima da perturbação induzida pelo posicionamento em x).
-* **Amplitude de Oscilação Vertical (A_y):** 0.08 unidades virtuais (determina a intensidade máxima da perturbação induzida pelo posicionamento em y).
-* **Frequência Angular em X (ωₓ):** 1.5 radianos por segundo (regula a velocidade do ciclo de onda horizontal).
-* **Frequência Angular em Y (ω_y):** 2.0 radianos por segundo (regula a velocidade do ciclo de onda vertical).
-* **Fatores de Escalonamento de Fase (φₓ, φ_y):** φₓ = 0.5 e φ_y = 0.8 (distribuem as ondas ao longo da extensão da malha para evitar oscilações em bloco uniforme).
+* **CPU (JavaScript):** Captura eventos do mouse -> Normalização & Lerp -> Atualização do Tempo (Clock) -> Modificação de Buffers (VRAM).
+* **GPU (GLSL):** Vertex Shader (Multiplicação matricial, tamanho do ponto) -> Fragment Shader (Descarte de raio, mistura de gradiente cor/alpha).
 
 ---
 
-## 3. Geometria de Interação e Normalização do Espaço de Tela
+## 2. Gerenciamento de Memória Gráfica e Engenharia de Atributos
 
-A entrada física gerada pelo usuário ocorre no espaço bidimensional da tela do dispositivo (coordenadas de pixel baseadas no DOM). Esse espaço possui sua origem no canto superior esquerdo (0,0) e estende-se até as dimensões máximas de resolução da janela, descritas pelo par ordenado de largura e altura (W, H).
+A malha tridimensional da face é alocada diretamente na memória de vídeo (VRAM) por meio da API `THREE.BufferGeometry`. Essa abordagem de baixo nível contorna a sobrecarga de objetos JavaScript e fornece arrays lineares nativos que a GPU pode processar em paralelo.
 
-Para unificar essas métricas com o motor gráfico tridimensional, os valores de pixel brutos M_pixel = (x_px, y_px) sofrem uma transformação afim de mapeamento linear para o **Espaço de Coordenadas de Dispositivo Normalizadas** (NDC - *Normalized Device Coordinates*), transladando a origem para o centro geométrico da viewport e limitando os eixos ao intervalo fechado [-1, 1].
+**Alocação de Memória para 15.000 Vértices:**
+Para cada partícula, são necessários três valores de ponto flutuante de 32 bits (`float32`), correspondendo aos eixos cartesianos locais X, Y e Z.
+Memória Alocada = 15.000 × 3 × 4 bytes = 180.000 bytes ≈ 180 KB
 
-As funções de mapeamento são dadas por:
+```typescript
+import * as THREE from 'three';
 
-x_ndc = (2 * x_px / W) - 1
-y_ndc = - ((2 * y_px / H) - 1)
+const particleGeometry = 
+    new THREE.BufferGeometry();
 
-*Nota: O sinal negativo aplicado ao eixo vertical é matematicamente necessário, visto que o sistema de coordenadas de tela cresce de cima para baixo, enquanto o espaço cartesiano tridimensional cresce de baixo para cima.*
+const vertexCount = 15000;
 
-### Amortecimento Físico via Interpolação Linear Discreta (Lerp)
-Para mitigar transições abruptas e ruídos na captura do periférico, o vetor de controle que efetivamente atua sobre a rotação do modelo (V_atual) persegue assintoticamente o vetor alvo da posição real do mouse (V_alvo) através de uma equação de diferenças finitas de primeira ordem:
+const positionsArray = 
+    new Float32Array(vertexCount * 3);
 
-V_atual(t_k) = V_atual(t_{k-1}) + α * (V_alvo(t_k) - V_atual(t_{k-1}))
+const initialPositionsArray = 
+    new Float32Array(vertexCount * 3);
 
-Onde o coeficiente de amortecimento físico (fator de inércia) possui o seguinte valor escalar fixo:
-α = 0.05
+for (let i = 0; i < vertexCount; i++) {
+    const i3 = i * 3;
+    
+    // Dados originais populam X, Y, Z
+    positionsArray[i3 + 0] = originalX;
+    positionsArray[i3 + 1] = originalY;
+    positionsArray[i3 + 2] = originalZ;
+    
+    // Clonagem física inicial
+    initialPositionsArray[i3 + 0] = 
+        positionsArray[i3 + 0];
+        
+    initialPositionsArray[i3 + 1] = 
+        positionsArray[i3 + 1];
+        
+    initialPositionsArray[i3 + 2] = 
+        positionsArray[i3 + 2];
+}
 
----
+// Injeção dos buffers na API
+const bufferAttr = 
+    new THREE.BufferAttribute(
+        positionsArray, 
+        3
+    );
 
-## 4. Álgebra Linear e Transformações em Coordenadas Homogêneas
-
-Para possibilitar operações de translação espacial em conjunto com rotações e escalas sob a forma de multiplicações matriciais puras, o espaço vetorial R³ é mapeado para o espaço projetivo quadridimensional através do uso de **Coordenadas Homogêneas**. Um ponto P = [x, y, z]ᵀ é expandido para:
-
-P_hat = [x, y, z, 1]ᵀ ∈ R⁴
-
-### A. Matriz de Modelo (M_model)
-A matriz de modelo sintetiza as transformações locais aplicadas à face tridimensional: Escala (S), Rotação horizontal (R_y), Rotação vertical (R_x) e Translação (T).
-
-M_model = T × R_x × R_y × S
-
-#### 1. Matriz de Escala (S)
-Garante que as proporções geométricas internas da malha permaneçam normalizadas dentro de um diâmetro virtual controlado de 2.0 metros:
-[ 1.0,  0,   0,   0 ]
-[  0,  1.0,  0,   0 ]
-[  0,   0,  1.0,  0 ]
-[  0,   0,   0,   1 ]
-
-#### 2. Matriz de Rotação Horizontal (R_y)
-Operada diretamente pelo componente x_ndc interpolado do mouse. A rotação angular θ_y é estritamente limitada para evitar a perda do contorno tridimensional do rosto:
-θ_y = x_ndc * θ_ymax  (onde θ_ymax = 35° ≈ 0.6108 rad)
-
-#### 3. Matriz de Rotação Vertical (R_x)
-Operada pelo componente y_ndc interpolado do mouse. O ângulo θ_x possui uma restrição mais severa para preservar o alinhamento com os elementos de texto da interface de usuário:
-θ_x = -y_ndc * θ_xmax (onde θ_xmax = 27° ≈ 0.4712 rad)
-
-#### 4. Matriz de Translação (T)
-Desloca sutilmente o centro de massa do modelo para baixo no eixo vertical, adaptando-o ao leiaute de design asimétrico do site (Deslocamento de -0.2 em Y).
-
----
-
-## 5. Projeção Perspectiva e Geometria da Câmera Virtual
-
-A conversão final da cena tridimensional para o plano de exibição bidimensional depende da interação entre duas matrizes fundamentais: a Matriz de Visualização (M_view) e a Matriz de Projeção Perspectiva (M_projection).
-
-### A. Matriz de Visualização (M_view)
-A câmera do mundo virtual está posicionada estaticamente ao longo do eixo de profundidade positivo, focada rigidamente na origem do universo virtual. Suas coordenadas físicas são: [0.0, 0.0, 5.0]ᵀ
-
-### B. Matriz de Projeção Perspectiva (M_projection)
-Esta matriz constrói matematicamente o frustum de visualização, gerando o efeito de encolhimento geométrico proporcional à distância.
-* Campo de Visão Vertical (FOV): 45°
-* Plano de Corte Próximo (near): 0.1 unidades
-* Plano de Corte Distante (far): 100.0 unidades
+particleGeometry.setAttribute(
+    'position', 
+    bufferAttr
+);
+```
 
 ---
 
-## 6. Modelagem Luminescente Procedural (Fragment Space Math)
+## 3. O Loop de Animação e Motor de Interpolação de Movimento
 
-No estágio final de rasterização, cada partícula sofre um cálculo matemático espacial interno para gerar a geometria de um ponto circular perfeito com atenuação de brilho exponencial (glow).
+O ciclo de renderização garante sincronia total com a taxa de atualização (*refresh rate*) do monitor do usuário através do `requestAnimationFrame`.
 
-O espaço de coordenadas local de uma única partícula mapeada na tela é normalizado de 0.0 a 1.0. A distância euclidiana radial d de qualquer pixel interno em relação ao centro exato da partícula (0.5, 0.5) é expressa por:
+```typescript
+const mouseState = { 
+    currentX: 0, 
+    currentY: 0, 
+    targetX: 0, 
+    targetY: 0, 
+    easeFactor: 0.05 
+};
 
-d = √((u - 0.5)² + (v - 0.5)²)
+const clock = new THREE.Clock();
 
-Se d > 0.5, o pixel é descartado. Para os pixels válidos, a opacidade (α) decai de forma não linear por meio de uma função exponencial de base quadrática:
+window.addEventListener(
+    'mousemove', 
+    (event: MouseEvent) => {
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+        
+        mouseState.targetX = 
+            (event.clientX / winW) * 2 - 1;
+            
+        mouseState.targetY = 
+            -(event.clientY / winH) * 2 + 1;
+    }
+);
 
-α_base = 1.0 - (2.0 * d)
-α_final = (α_base)² * 0.85
+function executionRenderLoop(): void {
+    const elapsedTime = 
+        clock.getElapsedTime();
+    
+    const ease = mouseState.easeFactor;
+    
+    // Interpolação Linear (Lerp)
+    mouseState.currentX += 
+        (mouseState.targetX - 
+         mouseState.currentX) * ease;
+                           
+    mouseState.currentY += 
+        (mouseState.targetY - 
+         mouseState.currentY) * ease;
+    
+    // Aplica rotação com limites
+    const maxRotY = Math.PI * 0.2;
+    const maxRotX = Math.PI * 0.15;
+    
+    particlePointsMesh.rotation.y = 
+        mouseState.currentX * maxRotY;
+        
+    particlePointsMesh.rotation.x = 
+        -mouseState.currentY * maxRotX;
+    
+    // Acesso otimizado ao buffer
+    const posAttr = 
+        particleGeometry
+        .attributes
+        .position as THREE.BufferAttribute;
+        
+    const positions = 
+        posAttr.array as Float32Array;
+    
+    for (let i = 0; i < vertexCount; i++) {
+        const i3 = i * 3;
+        
+        const localX = positions[i3 + 0];
+        const localY = positions[i3 + 1];
+        
+        // Cálculo da onda (respiração)
+        const waveX = 
+            Math.sin(
+                elapsedTime * 1.5 + 
+                localX * 0.5
+            ) * 0.12;
+            
+        const waveY = 
+            Math.cos(
+                elapsedTime * 2.0 + 
+                localY * 0.8
+            ) * 0.08;
+            
+        const wavePerturbation = 
+            waveX + waveY;
+                                 
+        positions[i3 + 2] = 
+            initialPositionsArray[i3 + 2] + 
+            wavePerturbation;
+    }
+    
+    posAttr.needsUpdate = true;
+    renderer.render(scene, camera);
+    requestAnimationFrame(executionRenderLoop);
+}
+```
+
+---
+
+## 4. Pipeline Gráfico Programável: Custom Shader Shading Engine
+
+Para obter os efeitos visuais característicos do StickMind, o pipeline fixo é substituído por um **Custom Shader Material** (`THREE.ShaderMaterial`) escrito em GLSL.
+
+### A. Vertex Shader Script (GLSL)
+```glsl
+uniform float uTime;
+varying vec3 vLocalPosition;
+varying float vDepth;
+
+void main() {
+    vLocalPosition = position;
+    
+    vec4 modelPos = 
+        modelMatrix * vec4(position, 1.0);
+        
+    vec4 viewPos = 
+        viewMatrix * modelPos;
+    
+    gl_Position = 
+        projectionMatrix * viewPos;
+        
+    vDepth = -viewPos.z;
+    
+    // Atenuação de Tamanho
+    gl_PointSize = (35.0 / vDepth);
+}
+```
+
+### B. Fragment Shader Script (GLSL)
+```glsl
+varying vec3 vLocalPosition;
+
+void main() {
+    float distToCenter = 
+        distance(gl_PointCoord, vec2(0.5));
+        
+    if (distToCenter > 0.5) discard;
+    
+    float intensity = 
+        pow(1.0 - (distToCenter * 2.0), 2.0);
+    
+    // #400d73 e #a855f7
+    vec3 colorBaseDark = 
+        vec3(0.25, 0.05, 0.45);  
+        
+    vec3 colorNeonLight = 
+        vec3(0.66, 0.33, 0.97); 
+    
+    float normHeight = 
+        clamp(
+            (vLocalPosition.y + 1.2) / 2.4, 
+            0.0, 
+            1.0
+        );
+        
+    vec3 finalGlowColor = 
+        mix(
+            colorBaseDark, 
+            colorNeonLight, 
+            normHeight
+        );
+    
+    gl_FragColor = 
+        vec4(
+            finalGlowColor, 
+            intensity * 0.85
+        );
+}
+```
+
+---
+
+## 5. Engenharia de Otimização de Performance
+
+Para sustentar renderização estável a 60 FPS+:
+1. **Eliminação de Alocações Dinâmicas:** Nenhum objeto é instanciado dentro do `executionRenderLoop`. Evita acionamentos do Garbage Collector.
+2. **Draw Calls Única:** Toda a nuvem de 15.000 pontos é despachada em uma única instrução de desenho via WebGL.
+3. **DPR Throttling:** Restrição do Device Pixel Ratio nativo a um teto máximo de `2.0` para prevenir sobrecargas em telas Retina/4K.
