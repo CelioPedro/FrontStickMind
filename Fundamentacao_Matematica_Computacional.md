@@ -8,6 +8,8 @@ Este documento detalha o modelo matemático rigoroso, as equações de álgebra 
 
 O rosto tridimensional do StickMind é modelado não como uma superfície contínua ou malha poligonal sólida (*solid mesh*), mas sim como uma estrutura discreta denominada **Nuvem de Pontos** (*Point Cloud*). 
 
+![Topologia da Nuvem de Pontos e Vértices Iniciais](mockassets/m1.png)
+
 Matematicamente, essa estrutura é definida como um conjunto finito S de vetores de posição no espaço euclidiano tridimensional R³:
 
 S = { P₁, P₂, P₃, ..., Pₙ }
@@ -64,7 +66,11 @@ Onde o coeficiente de amortecimento físico (fator de inércia) possui o seguint
 
 ## 4. Álgebra Linear e Transformações em Coordenadas Homogêneas
 
-Para possibilitar operações de translação espacial em conjunto com rotações e escalas sob a forma de multiplicações matriciais puras, o espaço vetorial R³ é mapeado para o espaço projetivo quadridimensional através do uso de **Coordenadas Homogêneas**. Um ponto P = [x, y, z]ᵀ é expandido para:
+Para possibilitar operações de translação espacial em conjunto com rotações e escalas sob a forma de multiplicações matriciais puras, o espaço vetorial R³ é mapeado para o espaço projetivo quadridimensional através do uso de **Coordenadas Homogêneas**. 
+
+![Matrizes de Modelo, Visualização e Projeção](mockassets/m2.png)
+
+Um ponto P = [x, y, z]ᵀ é expandido para:
 
 P_hat = [x, y, z, 1]ᵀ ∈ R⁴
 
@@ -96,6 +102,8 @@ Desloca sutilmente o centro de massa do modelo para baixo no eixo vertical, adap
 ## 5. Projeção Perspectiva e Geometria da Câmera Virtual
 
 A conversão final da cena tridimensional para o plano de exibição bidimensional depende da interação entre duas matrizes fundamentais: a Matriz de Visualização (M_view) e a Matriz de Projeção Perspectiva (M_projection).
+
+![Mundo Virtual e Renderização](mockassets/m3.png)
 
 ### A. Matriz de Visualização (M_view)
 A câmera do mundo virtual está posicionada estaticamente ao longo do eixo de profundidade positivo, focada rigidamente na origem do universo virtual. Suas coordenadas físicas são: [0.0, 0.0, 5.0]ᵀ
