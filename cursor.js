@@ -2,7 +2,7 @@
    'use strict';
 
    function setup(options) {
-      if (window.innerWidth < 768) return;
+      if (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches) return;
 
       var gsap = options.gsap;
       var dot = document.getElementById('cursor-dot');

@@ -48,7 +48,13 @@
          { opacity: 1, y: 0, duration: 0.6, stagger: 0.12, ease: 'power2.out', delay: 0.2 }
       );
 
-      gsap.set('.contact-main > *', { opacity: 0, y: 25 });
+      var isMobile = window.innerWidth < 768;
+
+      if (!isMobile) {
+          gsap.set('.contact-main > *', { opacity: 0, y: 25 });
+      } else {
+          gsap.set('.contact-main > *', { opacity: 1, y: 0 }); // Show CTA immediately on mobile
+      }
 
       function typewriteElement(el, callback) {
          var fullText = el.textContent;
@@ -133,7 +139,7 @@
          var desc = milestone.querySelector('.ct-desc');
 
          milestone.classList.add('is-active');
-         trackHeadTo(milestone);
+         if (!isMobile) trackHeadTo(milestone);
 
          gsap.fromTo(milestone, {
             opacity: 0,
@@ -149,19 +155,39 @@
             ease: 'power3.out'
          });
 
-         gsap.delayedCall(0.4, function () {
-            typewriteElement(desc, function () {
+         gsap.delayedCall(isMobile ? 0.05 : 0.4, function () {
+            if (isMobile) {
+               var overlay = desc.querySelector('.msg-typed-overlay');
+               var sizer = desc.querySelector('.msg-sizer');
+               if (overlay && sizer) {
+                  overlay.textContent = sizer.textContent;
+                  overlay.classList.remove('typing');
+               }
+               
                milestone.classList.remove('is-active');
                milestone.classList.add('is-complete');
 
                if (milestoneIndex < totalMilestones - 1) {
                   milestoneIndex++;
-                  gsap.delayedCall(0.32, revealNextMilestone);
+                  gsap.delayedCall(0.05, revealNextMilestone);
                } else {
                   milestoneIndex++;
-                  gsap.delayedCall(0.12, revealNextMilestone);
+                  gsap.delayedCall(0.05, revealNextMilestone);
                }
-            });
+            } else {
+               typewriteElement(desc, function () {
+                  milestone.classList.remove('is-active');
+                  milestone.classList.add('is-complete');
+
+                  if (milestoneIndex < totalMilestones - 1) {
+                     milestoneIndex++;
+                     gsap.delayedCall(0.32, revealNextMilestone);
+                  } else {
+                     milestoneIndex++;
+                     gsap.delayedCall(0.12, revealNextMilestone);
+                  }
+               });
+            }
          });
       }
 

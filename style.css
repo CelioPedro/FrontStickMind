@@ -1189,6 +1189,10 @@ html.cursor-magnetic #cursor-glow {
     }
 }
 
+.mobile-menu-toggle {
+    display: none;
+}
+
 @media (max-width: 768px) {
     .section {
         padding: 0 1.5rem;
@@ -1200,7 +1204,62 @@ html.cursor-magnetic #cursor-glow {
     }
 
     #main-nav {
-        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(5, 2, 8, 0.95);
+        backdrop-filter: blur(20px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+    }
+
+    #main-nav.menu-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .mobile-menu-toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 100;
+        margin-left: 1rem;
+    }
+
+    .mobile-menu-toggle span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: white;
+        margin: 3px 0;
+        transition: 0.3s;
+    }
+
+    .mobile-menu-toggle.menu-open span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .mobile-menu-toggle.menu-open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .mobile-menu-toggle.menu-open span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
     }
 
     .chat-feed {
@@ -1218,9 +1277,9 @@ html.cursor-magnetic #cursor-glow {
     /* Contact mobile */
     .contact-layout {
         flex-direction: column;
-        padding: calc(var(--header-height) + 1rem) 1.5rem 3rem;
+        padding: calc(var(--header-height) + 1rem + env(safe-area-inset-top)) 1.5rem calc(3rem + env(safe-area-inset-bottom));
         gap: 2rem;
-        overflow-y: auto;
+        pointer-events: auto; /* Fix dead zone */
     }
 
     .contact-left,
