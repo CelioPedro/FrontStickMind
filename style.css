@@ -1197,6 +1197,10 @@ html.cursor-magnetic #cursor-glow {
     display: none;
 }
 
+.gyro-btn {
+    display: none;
+}
+
 @media (max-width: 768px) {
     .section {
         padding: 0 1.5rem;
@@ -1352,8 +1356,4 @@ html.cursor-magnetic #cursor-glow {
         opacity: 0 !important;
         pointer-events: none;
     }
-}
-
-.gyro-btn {
-    display: none;
 }
