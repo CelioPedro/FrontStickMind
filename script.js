@@ -39,7 +39,7 @@
       { camX: 150, camY: -5, camZ: 390, headRotOffsetY: -0.2, headRotOffsetX: 0.03, bloom: 1.5 }
    ]);
    var currentCamState = Object.assign(
-      { x: 0, y: 0, z: 350, headOffY: 0.4, headOffX: -0.2 },
+      { x: sectionStates[0].camX, y: sectionStates[0].camY, z: sectionStates[0].camZ, headOffY: 0.4, headOffX: -0.2 },
       cameraConfig.initialState
    );
 
