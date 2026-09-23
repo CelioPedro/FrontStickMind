@@ -20,6 +20,13 @@
             { camX: 50, camY: 10, camZ: 370, headRotOffsetY: -0.25, headRotOffsetX: 0, bloom: 1.8 },
             { camX: 0, camY: 30, camZ: 320, headRotOffsetY: 0, headRotOffsetX: -0.05, bloom: 2.2 },
             { camX: 150, camY: -5, camZ: 390, headRotOffsetY: -0.2, headRotOffsetX: 0.03, bloom: 1.5 }
+         ],
+         mobileSections: [
+            { camX: 0, camY: 15, camZ: 420, headRotOffsetY: 0, headRotOffsetX: 0, bloom: 2.0 }, // Home
+            { camX: 0, camY: 0, camZ: 60, headRotOffsetY: 0, headRotOffsetX: 0, bloom: 3.5 }, // Us
+            { camX: 0, camY: 25, camZ: 400, headRotOffsetY: -0.1, headRotOffsetX: 0, bloom: 1.8 }, // About (centered, a bit higher)
+            { camX: 0, camY: 30, camZ: 380, headRotOffsetY: 0, headRotOffsetX: -0.05, bloom: 2.2 }, // Services
+            { camX: 0, camY: 30, camZ: 440, headRotOffsetY: 0, headRotOffsetX: 0, bloom: 1.5 } // Contact (centered)
          ]
       },
 

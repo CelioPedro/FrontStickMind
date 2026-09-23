@@ -23,6 +23,8 @@
 
       function setupEvents() {
          document.addEventListener('mousemove', onMouseMove);
+         document.addEventListener('touchstart', onTouchMove, { passive: true });
+         document.addEventListener('touchmove', onTouchMove, { passive: true });
          window.addEventListener('resize', onResize);
       }
 
@@ -34,6 +36,22 @@
 
          mouseNorm.x = (event.clientX / width) * 2 - 1;
          mouseNorm.y = -(event.clientY / height) * 2 + 1;
+
+         raycaster.setFromCamera(mouseNorm, camera);
+         var plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+         raycaster.ray.intersectPlane(plane, mouse3D);
+      }
+
+      function onTouchMove(event) {
+         if (!mouseEnabled || event.touches.length === 0) return;
+         var touch = event.touches[0];
+         var halfW = width / 2;
+         var halfH = height / 2;
+         mouseX = (touch.clientX - halfW) / 2;
+         mouseY = (touch.clientY - halfH) / 2;
+
+         mouseNorm.x = (touch.clientX / width) * 2 - 1;
+         mouseNorm.y = -(touch.clientY / height) * 2 + 1;
 
          raycaster.setFromCamera(mouseNorm, camera);
          var plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);

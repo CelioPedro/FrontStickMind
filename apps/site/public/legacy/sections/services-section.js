@@ -113,6 +113,37 @@
 
       container.addEventListener('wheel', onChatWheel, true);
 
+      var touchStartY = 0;
+      function onChatTouchStart(event) {
+         if (getCurrentSection && getCurrentSection() !== 3) return;
+         touchStartY = event.touches[0].clientY;
+      }
+      
+      function onChatTouchMove(event) {
+         if (getCurrentSection && getCurrentSection() !== 3) return;
+         if (chatIndex >= chatMessages.length && !chatTyping) {
+            container.removeEventListener('touchstart', onChatTouchStart, true);
+            container.removeEventListener('touchmove', onChatTouchMove, true);
+            return;
+         }
+         var touchY = event.touches[0].clientY;
+         var deltaY = touchStartY - touchY;
+         
+         if (deltaY > 30 && !chatTyping) { // Threshold for swipe up
+            event.preventDefault();
+            event.stopPropagation();
+            touchStartY = touchY; // Reset to avoid multiple triggers in one swipe
+            revealNextMessage();
+         } else if (deltaY > 5) {
+             // Prevent native scroll while reading messages
+             event.preventDefault();
+             event.stopPropagation();
+         }
+      }
+      
+      container.addEventListener('touchstart', onChatTouchStart, { passive: true, capture: true });
+      container.addEventListener('touchmove', onChatTouchMove, { passive: false, capture: true });
+
       setTimeout(function () {
          revealNextMessage();
       }, 400);

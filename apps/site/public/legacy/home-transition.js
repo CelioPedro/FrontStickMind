@@ -244,6 +244,27 @@
          advanceHomeZoom(event.deltaY);
       }, { passive: false });
 
+      var touchStartY = 0;
+      options.container.addEventListener('touchstart', function(event) {
+         if (!zoomActive || transitioning) return;
+         touchStartY = event.touches[0].clientY;
+      }, { passive: true });
+
+      options.container.addEventListener('touchmove', function(event) {
+         if (!zoomActive || transitioning) {
+            if (transitioning) event.preventDefault();
+            return;
+         }
+         var touchY = event.touches[0].clientY;
+         var deltaY = touchStartY - touchY;
+         touchStartY = touchY; // continuously update
+         
+         if (deltaY > 0) { // Only advance zoom on swipe up
+             event.preventDefault();
+             advanceHomeZoom(deltaY * 2.5); // Multiply for sensitivity
+         }
+      }, { passive: false });
+
       document.addEventListener('mousedown', startAutoScroll, true);
       document.addEventListener('auxclick', suppressNativeMiddleClick, true);
       document.addEventListener('click', suppressNativeMiddleClick, true);

@@ -20,9 +20,24 @@
       var linkSelector = options.linkSelector || '.nav-link, .header-logo';
       var ctaSelector = options.ctaSelector || '.cta-button, .header-cta';
 
+      var menuToggle = document.getElementById('mobile-menu-toggle');
+      var mainNav = document.getElementById('main-nav');
+      
+      if (menuToggle && mainNav) {
+         menuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.classList.toggle('menu-open');
+            mainNav.classList.toggle('menu-open');
+         });
+      }
+
       document.querySelectorAll(linkSelector).forEach(function (link) {
          link.addEventListener('click', function (event) {
             event.preventDefault();
+            if (menuToggle && mainNav) {
+               menuToggle.classList.remove('menu-open');
+               mainNav.classList.remove('menu-open');
+            }
             scrollToTarget(options, this.getAttribute('href'));
          });
       });
