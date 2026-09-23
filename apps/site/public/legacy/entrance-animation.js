@@ -146,6 +146,10 @@
          { opacity: 0, y: -15 },
          { opacity: 1, y: 0, duration: 0.4 }, '-=0.2'
       );
+      timeline.fromTo('.mobile-menu-toggle',
+         { opacity: 0, y: -15 },
+         { opacity: 1, y: 0, duration: 0.4 }, '-=0.2'
+      );
       timeline.from('.scroll-indicator', { opacity: 0, duration: 1.0 }, '-=0.3');
 
       timeline.call(function () {
