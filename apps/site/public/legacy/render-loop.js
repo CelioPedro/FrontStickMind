@@ -23,9 +23,46 @@
 
       function setupEvents() {
          document.addEventListener('mousemove', onMouseMove);
-         document.addEventListener('touchstart', onTouchMove, { passive: true });
-         document.addEventListener('touchmove', onTouchMove, { passive: true });
          window.addEventListener('resize', onResize);
+
+         var gyroBtn = document.getElementById('gyro-btn');
+         if (gyroBtn) {
+            gyroBtn.addEventListener('click', requestGyroPermission);
+         }
+      }
+
+      function requestGyroPermission() {
+         if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission()
+               .then(function (permissionState) {
+                  if (permissionState === 'granted') {
+                     window.addEventListener('deviceorientation', handleOrientation);
+                     document.getElementById('gyro-btn').classList.add('hidden');
+                  }
+               })
+               .catch(console.error);
+         } else {
+            // Non iOS 13+ devices
+            window.addEventListener('deviceorientation', handleOrientation);
+            document.getElementById('gyro-btn').classList.add('hidden');
+         }
+      }
+
+      function handleOrientation(event) {
+         if (!mouseEnabled) return;
+         
+         var gamma = event.gamma || 0; // Left/Right
+         var beta = event.beta || 0; // Front/Back
+
+         // Clamp values for smoother experience
+         if (gamma > 45) gamma = 45;
+         if (gamma < -45) gamma = -45;
+         if (beta > 135) beta = 135;
+         if (beta < 45) beta = 45;
+
+         // Map tilt to mouseX/mouseY
+         mouseX = gamma * 4;
+         mouseY = (beta - 90) * 4;
       }
 
       function onMouseMove(event) {
@@ -36,22 +73,6 @@
 
          mouseNorm.x = (event.clientX / width) * 2 - 1;
          mouseNorm.y = -(event.clientY / height) * 2 + 1;
-
-         raycaster.setFromCamera(mouseNorm, camera);
-         var plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-         raycaster.ray.intersectPlane(plane, mouse3D);
-      }
-
-      function onTouchMove(event) {
-         if (!mouseEnabled || event.touches.length === 0) return;
-         var touch = event.touches[0];
-         var halfW = width / 2;
-         var halfH = height / 2;
-         mouseX = (touch.clientX - halfW) / 2;
-         mouseY = (touch.clientY - halfH) / 2;
-
-         mouseNorm.x = (touch.clientX / width) * 2 - 1;
-         mouseNorm.y = -(touch.clientY / height) * 2 + 1;
 
          raycaster.setFromCamera(mouseNorm, camera);
          var plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
