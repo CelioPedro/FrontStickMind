@@ -1329,7 +1329,7 @@ html.cursor-magnetic #cursor-glow {
     }
 
     .gyro-btn {
-        display: flex;
+        display: flex !important;
         position: fixed;
         bottom: 20px;
         left: 50%;
@@ -1349,7 +1349,7 @@ html.cursor-magnetic #cursor-glow {
     }
 
     .gyro-btn.hidden {
-        opacity: 0;
+        opacity: 0 !important;
         pointer-events: none;
     }
 }
