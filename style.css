@@ -1211,6 +1211,10 @@ html.cursor-magnetic #cursor-glow {
         display: none !important;
     }
 
+    .scroll-indicator {
+        display: none !important;
+    }
+
     #main-nav {
         position: fixed;
         top: 0;
