@@ -42,7 +42,8 @@
       { x: sectionStates[0].camX, y: sectionStates[0].camY, z: sectionStates[0].camZ, headOffY: 0.4, headOffX: -0.2 },
       cameraConfig.initialState
    );
-
+   currentCamState.z = sectionStates[0].camZ;
+   currentCamState.y = sectionStates[0].camY;
    var particleMaterial;
    var uniforms = {
       uTime: { value: 0 },
