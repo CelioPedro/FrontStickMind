@@ -153,6 +153,12 @@
       timeline.from('.scroll-indicator', { opacity: 0, duration: 1.0 }, '-=0.3');
 
       timeline.call(function () {
+         if (window.innerWidth <= 768) {
+            var gyroModal = document.getElementById('gyro-modal');
+            if (gyroModal) {
+               gyroModal.classList.add('active');
+            }
+         }
          if (options.onComplete) options.onComplete();
       });
    }
