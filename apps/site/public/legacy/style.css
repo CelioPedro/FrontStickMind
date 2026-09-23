@@ -1197,7 +1197,7 @@ html.cursor-magnetic #cursor-glow {
     display: none;
 }
 
-.gyro-btn {
+.gyro-modal {
     display: none;
 }
 
@@ -1332,28 +1332,43 @@ html.cursor-magnetic #cursor-glow {
         cursor: auto;
     }
 
-    .gyro-btn {
+    .gyro-modal {
         display: flex !important;
         position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(255, 255, 255, 0.1);
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: var(--color-white);
-        padding: 10px 20px;
-        border-radius: 30px;
-        font-family: inherit;
-        font-size: 0.9rem;
-        z-index: 1000;
-        cursor: pointer;
-        opacity: 1;
-        transition: opacity 0.3s ease;
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
     }
 
-    .gyro-btn.hidden {
+    .gyro-modal.active {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .gyro-modal.hidden {
         opacity: 0 !important;
-        pointer-events: none;
+        pointer-events: none !important;
+    }
+
+    .gyro-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: var(--color-white);
+        padding: 15px 30px;
+        border-radius: 30px;
+        font-family: inherit;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .gyro-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
     }
 }

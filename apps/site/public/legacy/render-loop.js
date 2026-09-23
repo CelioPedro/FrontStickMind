@@ -37,14 +37,16 @@
                .then(function (permissionState) {
                   if (permissionState === 'granted') {
                      window.addEventListener('deviceorientation', handleOrientation);
-                     document.getElementById('gyro-btn').classList.add('hidden');
+                     var modal = document.getElementById('gyro-modal');
+                     if (modal) modal.classList.remove('active');
                   }
                })
                .catch(console.error);
          } else {
             // Non iOS 13+ devices
             window.addEventListener('deviceorientation', handleOrientation);
-            document.getElementById('gyro-btn').classList.add('hidden');
+            var modal = document.getElementById('gyro-modal');
+            if (modal) modal.classList.remove('active');
          }
       }
 
