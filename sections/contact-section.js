@@ -115,7 +115,11 @@
          if (milestoneIndex >= totalMilestones) {
             setTimeout(function () {
                var ctaEl = document.getElementById('contact-cta');
-               if (ctaEl) trackHeadTo(ctaEl);
+               if (ctaEl && !isMobile) {
+                   trackHeadTo(ctaEl);
+               } else if (ctaEl && isMobile && ctaEl.scrollIntoView) {
+                   ctaEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+               }
 
                gsap.to('.contact-main > *', {
                   opacity: 1,
@@ -139,7 +143,13 @@
          var desc = milestone.querySelector('.ct-desc');
 
          milestone.classList.add('is-active');
-         if (!isMobile) trackHeadTo(milestone);
+         if (!isMobile) {
+             trackHeadTo(milestone);
+         } else {
+             if (milestone.scrollIntoView) {
+                 milestone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+             }
+         }
 
          gsap.fromTo(milestone, {
             opacity: 0,
