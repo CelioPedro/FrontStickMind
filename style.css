@@ -1322,6 +1322,10 @@ html.cursor-magnetic #cursor-glow {
         gap: 0;
     }
 
+    .ct-milestone {
+        min-height: 120px;
+    }
+
     .contact-title {
         font-size: 2.2rem;
     }
