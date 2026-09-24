@@ -221,7 +221,7 @@ html.cursor-magnetic #cursor-glow {
     opacity: 0;
 }
 
-.brand-image { width: 50px; height: 50px; object-fit: contain; mix-blend-mode: screen; border-radius: 50%; transform: scale(1.3); margin-right: -4px; margin-left: -8px; }
+.brand-image { width: 50px; height: 50px; object-fit: contain;  border-radius: 50%; transform: scale(1.3); margin-right: -4px; margin-left: -8px; }
 .logo-icon {
     flex-shrink: 0;
 }
@@ -436,6 +436,7 @@ html.cursor-magnetic #cursor-glow {
     -webkit-backdrop-filter: blur(16px);
     border-bottom-color: rgba(0, 0, 0, 0.06);
 }
+
 
 #site-header.light-mode .header-logo,
 #site-header.light-mode .logo-icon path {
