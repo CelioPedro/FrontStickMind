@@ -1211,6 +1211,10 @@ html.cursor-magnetic #cursor-glow {
         min-height: 100vh;
     }
 
+    #contact {
+        scroll-snap-align: none;
+    }
+
     #site-header {
         padding: 0 1.5rem;
     }
@@ -1304,6 +1308,7 @@ html.cursor-magnetic #cursor-glow {
     /* Contact mobile */
     .contact-layout {
         flex-direction: column;
+        height: auto;
         padding: calc(var(--header-height) + 1rem + env(safe-area-inset-top)) 1.5rem calc(6rem + env(safe-area-inset-bottom));
         gap: 2rem;
         pointer-events: auto; /* Fix dead zone */
