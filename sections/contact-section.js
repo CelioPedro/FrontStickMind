@@ -155,39 +155,19 @@
             ease: 'power3.out'
          });
 
-         gsap.delayedCall(isMobile ? 0.05 : 0.4, function () {
-            if (isMobile) {
-               var overlay = desc.querySelector('.msg-typed-overlay');
-               var sizer = desc.querySelector('.msg-sizer');
-               if (overlay && sizer) {
-                  overlay.textContent = sizer.textContent;
-                  overlay.classList.remove('typing');
-               }
-               
+         gsap.delayedCall(0.4, function () {
+            typewriteElement(desc, function () {
                milestone.classList.remove('is-active');
                milestone.classList.add('is-complete');
 
                if (milestoneIndex < totalMilestones - 1) {
                   milestoneIndex++;
-                  gsap.delayedCall(0.05, revealNextMilestone);
+                  gsap.delayedCall(isMobile ? 0.15 : 0.32, revealNextMilestone);
                } else {
                   milestoneIndex++;
-                  gsap.delayedCall(0.05, revealNextMilestone);
+                  gsap.delayedCall(0.12, revealNextMilestone);
                }
-            } else {
-               typewriteElement(desc, function () {
-                  milestone.classList.remove('is-active');
-                  milestone.classList.add('is-complete');
-
-                  if (milestoneIndex < totalMilestones - 1) {
-                     milestoneIndex++;
-                     gsap.delayedCall(0.32, revealNextMilestone);
-                  } else {
-                     milestoneIndex++;
-                     gsap.delayedCall(0.12, revealNextMilestone);
-                  }
-               });
-            }
+            });
          });
       }
 
