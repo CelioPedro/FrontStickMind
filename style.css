@@ -1204,20 +1204,11 @@ html.cursor-magnetic #cursor-glow {
 }
 
 @media (max-width: 768px) {
-    #scroll-container {
-        scroll-snap-type: none;
-    }
-
     .section {
         padding: 0 1.5rem;
         padding-bottom: 4rem;
         height: auto;
         min-height: 100vh;
-    }
-
-    #contact {
-        scroll-snap-align: none;
-        display: block;
     }
 
     #site-header {
@@ -1310,10 +1301,11 @@ html.cursor-magnetic #cursor-glow {
         gap: 1.5rem;
     }
 
-    /* Contact mobile */
     .contact-layout {
         flex-direction: column;
-        height: auto;
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         padding: calc(var(--header-height) + 1rem + env(safe-area-inset-top)) 1.5rem calc(6rem + env(safe-area-inset-bottom));
         gap: 2rem;
         pointer-events: auto; /* Fix dead zone */
@@ -1322,8 +1314,7 @@ html.cursor-magnetic #cursor-glow {
     .contact-left,
     .contact-main {
         max-width: 100%;
-        width: 100%;
-        flex: none;
+        flex-shrink: 0;
     }
 
     .contact-timeline {
