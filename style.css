@@ -1204,6 +1204,10 @@ html.cursor-magnetic #cursor-glow {
 }
 
 @media (max-width: 768px) {
+    #scroll-container {
+        scroll-snap-type: none;
+    }
+
     .section {
         padding: 0 1.5rem;
         padding-bottom: 4rem;
@@ -1213,6 +1217,7 @@ html.cursor-magnetic #cursor-glow {
 
     #contact {
         scroll-snap-align: none;
+        display: block;
     }
 
     #site-header {
@@ -1317,6 +1322,8 @@ html.cursor-magnetic #cursor-glow {
     .contact-left,
     .contact-main {
         max-width: 100%;
+        width: 100%;
+        flex: none;
     }
 
     .contact-timeline {
