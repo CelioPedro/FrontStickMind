@@ -146,7 +146,8 @@
          if (!isMobile) {
              trackHeadTo(milestone);
          } else {
-             if (milestone.scrollIntoView) {
+             // Começa a puxar a tela apenas do terceiro milestone em diante para preservar a leitura inicial
+             if (milestone.scrollIntoView && milestoneIndex >= 2) {
                  milestone.scrollIntoView({ behavior: 'smooth', block: 'center' });
              }
          }
